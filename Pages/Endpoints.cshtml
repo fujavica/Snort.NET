@@ -1,0 +1,244 @@
+@page
+@model EndpointsModel
+@{
+    ViewData["Title"] = "About";
+}
+<link href="~/Content/MvcGrid/mvc-grid.css" rel="stylesheet">
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="~/Scripts/d3pie.min.js"></script>
+<link rel="stylesheet" href="~/Content/FontAwesome/css/all.css">
+
+<div class="content graph-title underline">
+    Distribution of Attackers
+    <span class="tip-question">
+        ?
+        <span class="tooltiptext">
+            Shows the representation of source IPs <br /> within IPv4 packets.
+        </span>
+    </span>
+    @if (Model.filtered)
+    {
+        <span class="tip-filter">
+            <i class="fas fa-filter"> </i>
+            <span class="tooltiptext">Custom event filter is being applied</span>
+        </span>
+    }
+</div>
+@{///////////////////////////////////////////////////ATTACKERS////////////////////////////////////////////////////
+}
+<div id="pieChart"></div>
+<script>
+var pie = new d3pie("pieChart", {
+    /*
+    "header": {
+		"title": {
+			"text": "Distribution of Attackers",
+			"fontSize": 24,
+			"font": "open sans"
+		},
+		"subtitle": {
+			"text": "A full pie chart to show off label collision detection and resolution.",
+			"color": "#999999",
+			"fontSize": 12,
+			"font": "open sans"
+		},
+		"titleSubtitlePadding": 9
+    },*/
+
+	"footer": {
+		"color": "#999999",
+		"fontSize": 10,
+		"font": "open sans",
+		"location": "bottom-left"
+	},
+	"size": {
+		"canvasWidth": 1140,
+		"canvasHeight": 800,
+		"pieInnerRadius": "20%",
+		"pieOuterRadius": "65%"
+	},
+	"data": {
+		"sortOrder": "value-desc",
+		"smallSegmentGrouping": {
+			"enabled": true
+		},
+		"content": @Html.Raw(Model.attackers)
+	},
+	"labels": {
+		"outer": {
+			//"hideWhenLessThanPercentage": 2,
+			"pieDistance": 50
+		},
+		"inner": {
+			"hideWhenLessThanPercentage": 3
+		},
+		"mainLabel": {
+			"fontSize": 15
+		},
+		"percentage": {
+			"color": "#ffffff",
+			"fontSize": 15,
+			"decimalPlaces": 0
+		},
+		"value": {
+			"color": "#adadad",
+			"fontSize": 15
+		},
+		"lines": {
+			"enabled": true,
+			//"style": "straight"
+		}/*,
+		"truncation": {
+			"enabled": true
+		}*/
+	},
+	"tooltips": {
+		"enabled": true,
+		"type": "placeholder",
+		"string": "{label}: {value}, {percentage}%",
+		"styles": {
+			"fontSize": 15,
+			"fadeInSpeed": 1000
+		}
+	},
+	"effects": {
+		"load": {
+			"speed": 300
+		},
+		"pullOutSegmentOnClick": {
+			"effect": "elastic",
+			"speed": 1000,
+			"size": 50
+		}
+	},
+	"misc": {
+		"gradient": {
+			"enabled": true,
+			"percentage": 100
+		},
+
+	},
+	"callbacks": {
+		onClickSegment: function(a) {
+			//alert("Segment clicked! See the console for all data passed to the click handler.");
+			console.log(a);
+			if(a.data.label == "Other"){
+				return;
+			}
+			window.open("Events?src-ip-contains=" + a.data.label);
+		}
+	}
+});
+</script>
+<div class="content graph-title underline">
+    Distribution of Targets
+    <span class="tip-question">
+        ?
+        <span class="tooltiptext">
+            Shows the representation of destination IPs within IPv4 packets.
+        </span>
+    </span>
+</div>
+@{///////////////////////////////////////////////////TARGETS////////////////////////////////////////////////////
+}
+<div id="pieChart2"></div>
+<script>
+var pie = new d3pie("pieChart2", {
+	/*"header": {
+		"title": {
+			"text": "Distribution of Targets",
+			"fontSize": 24,
+			"font": "open sans"
+		},
+		"subtitle": {
+			"text": "A full pie chart to show off label collision detection and resolution.",
+			"color": "#999999",
+			"fontSize": 12,
+			"font": "open sans"
+		},
+		"titleSubtitlePadding": 9
+	},*/
+	"footer": {
+		"color": "#999999",
+		"fontSize": 10,
+		"font": "open sans",
+		"location": "bottom-left"
+	},
+	"size": {
+        "canvasWidth": 1140,
+        "canvasHeight": 800,
+        "pieInnerRadius": "20%",
+        "pieOuterRadius": "65%"
+	},
+	"data": {
+		"sortOrder": "value-desc",
+		"smallSegmentGrouping": {
+			"enabled": true
+		},
+		"content": @Html.Raw(Model.targets)
+	},
+	"labels": {
+		"outer": {
+			//"hideWhenLessThanPercentage": 2,
+			"pieDistance": 50
+		},
+		"inner": {
+			"hideWhenLessThanPercentage": 3
+		},
+		"mainLabel": {
+			"fontSize": 15
+		},
+		"percentage": {
+			"color": "#ffffff",
+			"fontSize": 15,
+			"decimalPlaces": 0
+		},
+		"value": {
+			"color": "#adadad",
+			"fontSize": 15
+		},
+		"lines": {
+			"enabled": true,
+			//"style": "straight"
+		}/*,
+		"truncation": {
+			"enabled": true
+		}*/
+	},
+	"tooltips": {
+		"enabled": true,
+		"type": "placeholder",
+		"string": "{label}: {value} Attacks",
+		"styles": {
+			"fontSize": 15,
+			"fadeInSpeed": 1000
+		}
+	},
+	"effects": {
+		"load": {
+			"speed": 300
+		},
+		"pullOutSegmentOnClick": {
+			"effect": "elastic",
+			"speed": 1000,
+			"size": 50
+		}
+	},
+	"misc": {
+		"gradient": {
+			"enabled": true,
+			"percentage": 100
+		},
+
+	},
+	"callbacks": {
+		onClickSegment: function(a) {
+			if(a.data.label == "Other"){
+				return;
+			}
+			console.log(a);
+			window.open("Events?dest-ip-contains=" + a.data.label);
+		}
+	}
+});
+</script>

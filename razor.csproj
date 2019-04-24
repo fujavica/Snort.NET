@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
+    <StartupObject>razor.Program</StartupObject>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="wwwroot\EventDrops-master\**" />
+    <Content Remove="wwwroot\EventDrops-master\**" />
+    <EmbeddedResource Remove="wwwroot\EventDrops-master\**" />
+    <None Remove="wwwroot\EventDrops-master\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Pages\Stats.cshtml.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="Pages\Stats.cshtml" />
+    <Content Remove="wwwroot\favicon.ico" />
+    <Content Remove="wwwroot\images\banner2.svg" />
+    <Content Remove="wwwroot\images\banner3.svg" />
+    <Content Remove="wwwroot\legend.svg" />
+    <Content Remove="wwwroot\world_population.tsv" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="wwwroot\GeoLite2-Country.mmdb" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MaxMind.GeoIP2" Version="3.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="MySql.Data" Version="8.0.12" />
+    <PackageReference Include="NonFactors.Grid.Mvc6" Version="4.0.1" />
+    <PackageReference Include="SharpPcap" Version="4.6.1" />
+  </ItemGroup>
+</Project>

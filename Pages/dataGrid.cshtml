@@ -1,0 +1,20 @@
+@page
+@model DetailModelData
+
+@{ Layout = null; }
+@(Html
+        .Grid(Model.datas)
+        .Build(columns =>
+        {
+            columns.Add(model => model.hex).Titled("Hexa").Css("courier");
+            columns.Add(model => model.ascii).Titled("ASCII");
+        })
+        .Empty("Packet has no data")
+        .Pageable(pager =>
+        {
+            pager.PageSizes = new Dictionary<Int32, String> { { 15, "15" }, { 0, "All" } };
+            pager.ShowPageSizes = true;
+            pager.PagesToDisplay = 3;
+        })
+        .Id("my-ajax-data")
+)

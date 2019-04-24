@@ -1,0 +1,30 @@
+@page
+@model IndexGridModel
+
+@{ Layout = null;
+
+
+}
+
+@(Html
+        .Grid(Model.alerts)
+        .Build(columns =>
+        {
+            columns.Add(model => "<a target=_blank href=Detail?cid=" + model.cid + "&sid=" + model.sid + ">" + model.sid + ":" + model.cid + "</a>").Titled("ID").Encoded(false);
+            columns.Add(model => model.priority).Titled("Priority");
+            columns.Add(model => model.src_ip).Titled("Source IP");
+            columns.Add(model => model.dest_ip).Titled("Destination IP");
+            columns.Add(model => model.desc).Titled("Signature");
+            columns.Add(model => model.time).Titled("Time").InitialSort(GridSortOrder.Desc).Css("fixedColumn");
+        })
+        .Empty("No data found")
+        .RowAttributed(model => new
+        {
+            data_cid = model.cid,
+            data_sid = model.sid
+        })
+        .RowCss(model => model.time.Ticks > Model.lastTime ? model.priority == 1 ? "prio1b" : model.priority == 2 ? "prio2b" : "prio3b"
+                                                    : model.priority == 1 ? "prio1" : model.priority == 2 ? "prio2" : "prio3")
+        .Sortable()
+        .Id("my-ajax-grid")
+)

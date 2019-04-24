@@ -1,0 +1,176 @@
+﻿body {
+    background: url(../../Images/background.jpg);
+    font-family: 'Open Sans', sans-serif;
+    background-repeat: no-repeat;
+    background-size: cover;
+    font-size: 14px;
+}
+
+.logo {
+    text-align: center;
+}
+
+    .logo a {
+        margin-left: 0.5em;
+        font-size: 84px;
+        color: #FFFFFF;
+    }
+
+    .logo .version {
+        font-family: 'Open Sans', sans-serif;
+        vertical-align: bottom;
+        margin-left: -20px;
+        font-size: 14px;
+        line-height: 2;
+    }
+
+.sidebar-search {
+    background: rgba(255, 255, 255, 0.7);
+    margin-bottom: 20px;
+    border-style: none;
+    text-align: center;
+    color: #000000;
+    padding: 7px;
+    width: 100%;
+}
+
+.sidebar ul {
+    background: rgba(255, 255, 255, 0.93);
+    font-weight: bold;
+    list-style: none;
+    padding: 0;
+}
+
+    .sidebar ul a {
+        padding: 5px 12px;
+        color: #777777;
+        display: block;
+    }
+
+        .sidebar ul a:hover,
+        .sidebar ul a:focus {
+            background: #FFFFFF;
+            color: #448FBA;
+        }
+
+.sidebar li + li {
+    border-top: 1px solid #B8B8B8;
+}
+
+.widget {
+    margin-top: 20px;
+}
+
+.widget-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+    align-items: center;
+    padding: 8px 12px;
+    color: #FFFFFF;
+    font-size: 16px;
+    display: flex;
+}
+
+    .widget-header > span {
+        padding-left: 10px;
+        flex: 1;
+    }
+
+.widget-buttons {
+    cursor: pointer;
+    padding: 0 5px;
+}
+
+    .widget-buttons a,
+    .widget-buttons span {
+        padding-left: 10px;
+        color: #FFFFFF;
+    }
+
+    .widget-buttons a:hover,
+    .widget-buttons span:hover {
+        color: #DDDDDD;
+    }
+
+.widget-content {
+    background: rgba(255, 255, 255, 0.93);
+    padding: 10px;
+}
+
+.action {
+    width: 1px;
+}
+
+.docs pre {
+    padding: 7px 10px;
+}
+
+.docs .row {
+    margin-bottom: 10px;
+}
+
+.docs .widget-header {
+    background: #62BD6B;
+}
+
+.console .widget-header {
+    background: #898989;
+}
+
+.example .widget-header {
+    background: #8C86D7;
+}
+
+.example .widget-content {
+    background: #FFFFFF;
+}
+
+.code .widget-header {
+    background: #479AE2;
+}
+
+p {
+    margin: 10px 0;
+}
+
+pre {
+    border: 1px solid #E2E2E2;
+    background: #FFFFFF;
+    padding: 0 15px;
+    margin: 0;
+}
+
+    pre .com {
+        font-weight: bold;
+        color: #15A915;
+    }
+
+    pre .cls {
+        color: #2AADBA;
+    }
+
+    pre .kwd {
+        color: #084DFF;
+    }
+
+    pre .str {
+        color: #CC6500;
+    }
+
+.mvc-grid-search {
+    background-color: rgba(255, 255, 255, 0.7);
+    text-align: center;
+    margin-left: 15px;
+    font-size: 0.7em;
+    padding: 5px 0;
+    color: #000000;
+    border: none;
+}
+
+.mvc-grid th, .mvc-grid td {
+    border: 1px solid #CACACA;
+}
+
+.mvc-grid-pager .active a {
+    background-color: rgba(12, 123, 220, 0.72);
+    border-color: #3280C1;
+}

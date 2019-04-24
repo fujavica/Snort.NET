@@ -1,0 +1,38 @@
+﻿@page
+@model razor.Pages.IndexContentModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+<script src="~/Scripts/d3.v4.min.js"></script>
+<link href="~/Content/MvcGrid/mvc-grid.css" rel="stylesheet">
+<link rel="stylesheet" href="~/Content/FontAwesome/css/all.css">
+<script src="~/Scripts/d3pie.min.js"></script>
+<script src="~/Scripts/eventdrops.js"></script>
+
+
+
+<div id="load">
+    @{ if (Model.loading == true)
+        {
+            <h3 class="text-danger">Caching alerts. Please wait...</h3>
+        }
+    }
+    <div class="loader"></div>
+</div>
+
+
+<div id="dashboard"></div>
+
+@section myScripts {
+    <script>
+        $.ajax({
+            url: "IndexContent" + window.location.search,
+            cache: false,
+            success: function (html) {
+                $("#dashboard").append(html);
+            }
+        });
+    </script>
+}
+
+

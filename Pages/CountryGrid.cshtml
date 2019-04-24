@@ -1,0 +1,27 @@
+﻿@page
+@model CountryGridModel
+
+@{ Layout = null; }
+
+
+@(Html
+        .Grid(Model.country_table)
+        .Build(columns =>
+        {
+            columns.Add(model => model.country).Titled("Country");
+            columns.Add(model => model.count).Titled("Total attacks");
+
+        })
+        .Empty("Data not found")
+        .Pageable(pager =>
+        {
+            pager.PageSizes = new Dictionary<Int32, String> { { 10, "10" }, { 0, "All" } };
+            pager.ShowPageSizes = true;
+            pager.PagesToDisplay = 3;
+        })
+        .Sortable()
+        .Filterable()
+        .Id("country-grid")
+        .RowCss(model => "country")
+    // .RowCss(model => model.count > 99 ? "country1" : model.count > 9 ? "country2" : model.count > 4 ? "country3" : "country4")
+)

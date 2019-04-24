@@ -1,0 +1,348 @@
+@page
+@model ProtocolsModel
+@{
+    ViewData["Title"] = "About";
+}
+<link rel="stylesheet" href="~/Content/FontAwesome/css/all.css">
+<link href="~/Content/MvcGrid/mvc-grid.css" rel="stylesheet">
+<script src="~/Scripts/d3.v4.min.js"></script>
+@{///////////////////////////////////////////////////SUN-BURST////////////////////////////////////////////////////
+}
+<div class="content graph-title underline">
+    Destination Protocol Distribution
+    <span class="tip-question">
+        ?
+        <span class="tooltiptext">
+            Shows the representation of protocols presented in IP headers:<br />
+            TCP → Destination port<br />
+            UDP → Destination port<br />
+            ICMP → Type
+        </span>
+    </span>
+    @if (Model.filtered)
+    {
+        <span class="tip-filter">
+            <i class="fas fa-filter"> </i>
+            <span class="tooltiptext">Custom event filter is being applied</span>
+        </span>
+    }
+</div>
+<svg id="svg2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"></svg>
+
+<div class="content graph-title underline">
+    Source Protocol Distribution
+    <span class="tip-question">
+        ?
+        <span class="tooltiptext">
+            Shows the representation of protocols presented in IP headers:<br />
+            TCP → Source port<br />
+            UDP → Source port<br />
+            ICMP → Type
+        </span>
+    </span>
+    @if (Model.filtered)
+    {
+        <span class="tip-filter">
+            <i class="fas fa-filter"> </i>
+            <span class="tooltiptext">Custom event filter is being applied</span>
+        </span>
+    }
+</div>
+
+<svg id="svg3" xmlns="http://www.w3.org/2000/svg" xmlns: xlink="http://www.w3.org/1999/xlink"></svg>
+@{ if (Model.alerts == null || Model.alerts.Count() == 0)
+    {
+        return;
+    } }
+<script>
+var data = @Html.Raw(Model.protocols);
+
+function partition(data){
+	const root = d3.hierarchy(data)
+		.sum(function(d) { return d.size; })
+		.sort(function(a,b) {return b.value - a.value});
+	return d3.partition()
+		.size([2 * Math.PI, root.height + 1])
+		(root);
+}
+var color = d3.scaleOrdinal().range(d3.quantize(d3.interpolateRainbow, data.children.length + 1));
+var format = d3.format(",d");
+var width = 800;
+var height = 800
+var radius = width / 8;
+var arc = d3.arc()
+    .startAngle(function(d) {return d.x0})
+    .endAngle(function(d) {return d.x1})
+    .padAngle(function(d) {return Math.min((d.x1 - d.x0) / 2, 0.005)})
+    .padRadius(radius * 1.5)
+    .innerRadius(function(d) {return d.y0 * radius})
+    .outerRadius(function(d) {return Math.max(d.y0 * radius, d.y1 * radius - 1)})
+
+ const root = partition(data);
+
+
+  root.each(function(d){return d.current = d;});
+
+  const svg = d3.select("#svg2")
+	  .attr("height", height)
+      .attr("width", width)
+      .style("margin-left", "150px")
+	  .style("font", "10px sans-serif")
+	  .style("fill", "white");
+
+/*svg.append("text")
+        .attr("x", (width / 2))
+        .attr("y", 50)
+        .attr("text-anchor", "middle")
+		.style("font-size", "24px")
+		.style("fill", "#333333")
+		.style("font-family", "open sans")
+		.text("Destionation Protocol Distribution");	*/
+  const g = svg.append("g")
+      .attr("transform", "translate(" + width / 2 + "," + (height / 2 - 35) + ")");
+
+  const path = g.append("g")
+    .selectAll("path")
+    .data(root.descendants().slice(1))
+    .enter().append("path")
+      .attr("fill", function(d) {while (d.depth > 1) d = d.parent; return color(d.data.name); })
+      .attr("fill-opacity", function(d) { return(d.depth == 1 ? 1.0 : (d.depth == 2 ? 0.9: 0.8))})
+      .attr("d", function(d) {return arc(d.current)});
+
+  path.style("cursor", "pointer")
+      .on("click", clicked);
+
+  path.append("title")
+	  .text(function(d) {return d.ancestors().map(function(d) {return d.data.name}).reverse().join("/") + "\nTotal events: " +format(d.value)});
+
+
+  const label = g.append("g")
+      .attr("pointer-events", "none")
+      .attr("text-anchor", "middle")
+      .style("user-select", "none")
+    .selectAll("text")
+    .data(root.descendants().slice(1))
+    .enter().append("text")
+      .attr("dy", "0.35em")
+      .attr("fill-opacity", function(d) {return +labelVisible(d.current)})
+	  .attr("transform", function(d) {return labelTransform(d.current)})
+	  .style("font",  function(d) { return(d.depth == 1 ? "18px sans-serif" : (d.depth == 2 ? "14px sans-serif": "10px sans-serif"))})
+	  .style("font-weight", function(d) { return(d.depth < 2 ? "bold" : "normal")})
+      .text(function (d) { if (d.parent.data.name == "ICMP" && !isNaN(d.data.name)) return "Type #" + d.data.name; else return d.data.name});
+	  //.call(wrap, 40);
+
+  const parent = g.append("circle")
+      .datum(root)
+      .attr("r", radius)
+      .attr("fill", "none")
+      .attr("pointer-events", "all")
+      .on("click", clicked);
+
+  function clicked(p) {
+	  if(p.data.children == null){
+		  var protocol = p.parent.data.number;
+		  var port = p.data.name;
+		  if(isNaN(port)){
+        window.open("Events?protocol=" + protocol);
+			  return;
+		  }
+		  window.open("Events?protocol-equals=" + protocol + "&subprotocol_dest-equals=" + port);
+		  return;
+	  }
+    parent.datum(p.parent || root);
+
+    root.each(function(d) {
+		d.target = {
+      x0: Math.max(0, Math.min(1, (d.x0 - p.x0) / (p.x1 - p.x0))) * 2 * Math.PI,
+      x1: Math.max(0, Math.min(1, (d.x1 - p.x0) / (p.x1 - p.x0))) * 2 * Math.PI,
+      y0: Math.max(0, d.y0 - p.depth),
+	  y1: Math.max(0, d.y1 - p.depth)
+
+    }});
+
+    const t = g.transition().duration(750);
+
+    // Transition the data on all arcs, even the ones that aren’t visible,
+    // so that if this transition is interrupted, entering arcs will start
+    // the next transition from the desired position.
+    path.transition(t)
+        .tween("data", function(d)  {
+          const i = d3.interpolate(d.current, d.target);
+          return function(t) { d.current = i(t)};
+        })
+      .filter(function(d) {
+        return +this.getAttribute("fill-opacity") || arcVisible(d.target);
+      })
+        .attr("fill-opacity", function(d) { return(d.depth == 1 ? 1.0 : (d.depth == 2 ? 0.9: 0.8))})
+        .attrTween("d", function(d) { return function() {return arc(d.current);};});
+
+    label.filter(function(d) {
+        return +this.getAttribute("fill-opacity") || labelVisible(d.target);
+      }).transition(t)
+        .attr("fill-opacity", function(d) {return +labelVisible(d.target)})
+        .attrTween("transform", function(d) { return function() {return labelTransform(d.current);};});
+  }
+
+  function arcVisible(d) {
+    return d.y1 <= 3 && d.y0 >= 1 && d.x1 > d.x0;
+  }
+
+  function labelVisible(d) {
+    return d.y1 <= 3 && d.y0 >= 1 && (d.y1 - d.y0) * (d.x1 - d.x0) > 0.0314;
+  }
+
+  function labelTransform(d) {
+    const x = (d.x0 + d.x1) / 2 * 180 / Math.PI;
+	const y = (d.y0 + d.y1) / 2 * radius;
+	if(x < 180)
+	return "rotate(" + (x-90) + ") translate(" + y + ",0) rotate(0)";
+	return "rotate(" + (x-90) + ") translate(" + y + ",0) rotate(180)";
+  }
+</script>
+@{//PROTOCOLS//////////////////////SOURCE///////////////////////////////////////////////
+}
+<script>
+var data2 = @Html.Raw(Model.protocols_source);
+
+function partition(data){
+	const root = d3.hierarchy(data)
+		.sum(function(d) { return d.size; })
+		.sort(function(a,b) {return b.value - a.value});
+	return d3.partition()
+		.size([2 * Math.PI, root.height + 1])
+		(root);
+}
+var color = d3.scaleOrdinal().range(d3.quantize(d3.interpolateRainbow, data.children.length + 1));
+var format = d3.format(",d");
+var width = 800;
+var height = 800
+var radius = width / 8;
+var arc = d3.arc()
+    .startAngle(function(d) {return d.x0})
+    .endAngle(function(d) {return d.x1})
+    .padAngle(function(d) {return Math.min((d.x1 - d.x0) / 2, 0.005)})
+    .padRadius(radius * 1.5)
+    .innerRadius(function(d) {return d.y0 * radius})
+    .outerRadius(function(d) {return Math.max(d.y0 * radius, d.y1 * radius - 1)})
+
+ const root2 = partition(data2);
+
+
+  root2.each(function(d){return d.current = d;});
+
+  const svg2 = d3.select("#svg3")
+	  .attr("height", height)
+      .attr("width", width)
+      .style("margin-left", "150px")
+	  .style("font", "10px sans-serif")
+	  .style("fill", "white");
+
+/*svg.append("text")
+        .attr("x", (width / 2))
+        .attr("y", 50)
+        .attr("text-anchor", "middle")
+		.style("font-size", "24px")
+		.style("fill", "#333333")
+		.style("font-family", "open sans")
+		.text("Destionation Protocol Distribution");	*/
+  const g2 = svg2.append("g")
+      .attr("transform", "translate(" + width / 2 + "," + (height / 2 - 35) + ")");
+
+  const path2 = g2.append("g")
+    .selectAll("path")
+    .data(root2.descendants().slice(1))
+    .enter().append("path")
+      .attr("fill", function(d) {while (d.depth > 1) d = d.parent; return color(d.data.name); })
+      .attr("fill-opacity", function(d) { return(d.depth == 1 ? 1.0 : (d.depth == 2 ? 0.9: 0.8))})
+      .attr("d", function(d) {return arc(d.current)});
+
+  path2.style("cursor", "pointer")
+      .on("click", clicked2);
+
+  path2.append("title")
+	  .text(function(d) {return d.ancestors().map(function(d) {return d.data.name}).reverse().join("/") + "\nTotal events: " +format(d.value)});
+
+
+  const label2 = g2.append("g")
+      .attr("pointer-events", "none")
+      .attr("text-anchor", "middle")
+      .style("user-select", "none")
+    .selectAll("text")
+    .data(root2.descendants().slice(1))
+    .enter().append("text")
+      .attr("dy", "0.35em")
+      .attr("fill-opacity", function(d) {return +labelVisible(d.current)})
+	  .attr("transform", function(d) {return labelTransform(d.current)})
+	  .style("font",  function(d) { return(d.depth == 1 ? "18px sans-serif" : (d.depth == 2 ? "14px sans-serif": "10px sans-serif"))})
+	  .style("font-weight", function(d) { return(d.depth < 2 ? "bold" : "normal")})
+      .text(function (d) { if (d.parent.data.name == "ICMP" && !isNaN(d.data.name)) return "Type #" + d.data.name; else return d.data.name});
+	  //.call(wrap, 40);
+
+  const parent2 = g2.append("circle")
+      .datum(root2)
+      .attr("r", radius)
+      .attr("fill", "none")
+      .attr("pointer-events", "all")
+      .on("click", clicked2);
+
+  function clicked2(p) {
+	  if(p.data.children == null){
+		  var protocol = p.parent.data.number;
+		  var port = p.data.name;
+		  if(isNaN(port)){
+        window.open("Events?protocol=" + protocol);
+			  return;
+		  }
+		  window.open("Events?protocol-equals=" + protocol + "&subprotocol_src-equals=" + port);
+		  return;
+	  }
+    parent2.datum(p.parent || root2);
+
+    root2.each(function(d) {
+		d.target = {
+      x0: Math.max(0, Math.min(1, (d.x0 - p.x0) / (p.x1 - p.x0))) * 2 * Math.PI,
+      x1: Math.max(0, Math.min(1, (d.x1 - p.x0) / (p.x1 - p.x0))) * 2 * Math.PI,
+      y0: Math.max(0, d.y0 - p.depth),
+	  y1: Math.max(0, d.y1 - p.depth)
+
+    }});
+
+    const t = g2.transition().duration(750);
+
+    // Transition the data on all arcs, even the ones that aren’t visible,
+    // so that if this transition is interrupted, entering arcs will start
+    // the next transition from the desired position.
+    path2.transition(t)
+        .tween("data", function(d)  {
+          const i = d3.interpolate(d.current, d.target);
+          return function(t) { d.current = i(t)};
+        })
+      .filter(function(d) {
+        return +this.getAttribute("fill-opacity") || arcVisible(d.target);
+      })
+        .attr("fill-opacity", function(d) { return(d.depth == 1 ? 1.0 : (d.depth == 2 ? 0.9: 0.8))})
+        .attrTween("d", function(d) { return function() {return arc(d.current);};});
+
+    label2.filter(function(d) {
+        return +this.getAttribute("fill-opacity") || labelVisible(d.target);
+      }).transition(t)
+        .attr("fill-opacity", function(d) {return +labelVisible(d.target)})
+        .attrTween("transform", function(d) { return function() {return labelTransform(d.current);};});
+  }
+
+  function arcVisible(d) {
+    return d.y1 <= 3 && d.y0 >= 1 && d.x1 > d.x0;
+  }
+
+  function labelVisible(d) {
+    return d.y1 <= 3 && d.y0 >= 1 && (d.y1 - d.y0) * (d.x1 - d.x0) > 0.0314;
+  }
+
+  function labelTransform(d) {
+    const x = (d.x0 + d.x1) / 2 * 180 / Math.PI;
+	const y = (d.y0 + d.y1) / 2 * radius;
+	if(x < 180)
+	return "rotate(" + (x-90) + ") translate(" + y + ",0) rotate(0)";
+	return "rotate(" + (x-90) + ") translate(" + y + ",0) rotate(180)";
+    }
+</script>

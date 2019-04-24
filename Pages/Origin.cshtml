@@ -1,0 +1,57 @@
+@page
+@model OriginModel
+@{
+    ViewData["Title"] = "About";
+}
+
+<link href="~/Content/MvcGrid/mvc-grid.css" rel="stylesheet">
+<script src="~/Scripts/d3.v4.min.js"></script>
+<script src="~/Scripts/queue.v1.min.js"></script>
+<script src="~/Scripts/topojson.v1.min.js"></script>
+<script src="~/Scripts/d3-tip.js"></script>
+<link rel="stylesheet" href="~/Content/FontAwesome/css/all.css">
+@{///////////////////////////////////////////////////WORLD-MAP////////////////////////////////////////////////////
+}
+<div class="content graph-title underline">
+    Attacks Source Locations
+    <span class="tip-question">
+        ?
+        <span class="tooltiptext">
+            Employs MaxMind's GeoLite2 database API to crossreference the external source IPs with their country of origin.<br />
+        </span>
+    </span>
+    @if (Model.filtered)
+    {
+        <span class="tip-filter">
+            <i class="fas fa-filter"> </i>
+            <span class="tooltiptext">Custom event filter is being applied</span>
+        </span>
+    }
+
+</div>
+<div class="loader" id="load"></div>
+
+<div id="map"></div>
+
+@section myScripts {
+    <script>
+        window.noclick = 1;
+        $.ajax({
+            url: "Worldmap",
+            cache: false,
+            success: function (html) {
+                $("#map").append(html);
+            }
+        });
+        @{/* Fetch API
+        fetch('/Worldmap' + window.location.search)
+            .then(function (response) {
+                return response.text();
+            })
+            .then(function (result) {
+                $('#map').html(result);
+            });
+        */}
+    </script>
+}
+

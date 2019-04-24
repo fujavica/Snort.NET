@@ -1,0 +1,26 @@
+@page
+@model DetailModelWS
+
+@{ Layout = null; }
+@(Html
+        .Grid(Model.wsFields)
+        .Build(columns =>
+        {
+            columns.Add(model => model.number).Titled("No.").Sortable(true).InitialSort(GridSortOrder.Asc);
+            columns.Add(model => model.time).Titled("Time");
+            columns.Add(model => model.source).Titled("Source");
+            columns.Add(model => model.destination).Titled("Destination");
+            columns.Add(model => model.protocol).Titled("Protocol").Filterable(true);
+            columns.Add(model => model.length).Titled("Length");
+            columns.Add(model => model.info).Titled("Info");
+        })
+        .Empty("Data not found")
+        .Pageable(pager =>
+        {
+            pager.PageSizes = new Dictionary<Int32, String> { { 30, "30" }, { 0, "All" } };
+            pager.ShowPageSizes = true;
+            pager.PagesToDisplay = 3;
+        })
+        .Id("my-ajax-ws")
+        .RowCss(model => model.timestamp == Model.targetSec ? "highlightRow" : "")
+)

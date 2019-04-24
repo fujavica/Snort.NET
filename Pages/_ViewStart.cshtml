@@ -1,0 +1,21 @@
+﻿@using NonFactors.Mvc.Grid;
+@using Microsoft.AspNetCore.Http;
+@{
+    //Layout = "_Layout";
+
+    string CurrentName = Convert.ToString(Context.Request.Path);
+    //dynamic Layout;
+    switch (CurrentName)
+    {
+        case "/":
+            Layout = "_IndexLayout";
+            break;
+        case "/Index":
+            Layout = "_IndexLayout";
+            break;
+        default:
+            //Admin layout
+            Layout = "_Layout";
+            break;
+    }
+}

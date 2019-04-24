@@ -1,0 +1,814 @@
+﻿@page
+@model IndexModel
+@using NonFactors.Mvc.Grid;
+@{ Layout = null; }
+<script>
+    $("#load").hide();
+</script>
+@{if (Model.error != null)
+    {
+        <h2 class="text-danger">Error.</h2>
+        <h3 class="text-danger">An error occurred while processing your request.</h3>
+        <p>
+            <strong>Issue: </strong> <code>@Model.error</code>
+        </p>
+        return;
+    }
+}
+<div class="border-title" style="text-align: center;vertical-align:middle; ">
+    <div class="graph-title" style="border-style:outset; border-color:lightgrey; margin-bottom:5px">
+        Timeline
+        <div class="tip-question" style="margin:3px;">
+            ?
+            <table class="tooltiptext" style="left: 75%; top: 50px;background-color:#555;width: 350px; padding:20px">
+                <tr>
+                    <td align="center" class="btn w4button" style="color:#000;">
+                        <i class="fas fa-angle-double-up"></i>
+                    </td>
+                    <td>Zoom in (year → month), (month → day)</td>
+                </tr>
+                <tr>
+                    <td align="center" class="btn w4button" style="color:#000;  ">
+                        <i class="fas fa-angle-double-down"></i>
+                    </td>
+                    <td>Zoom out (day → month), (month → year)</td>
+                </tr>
+                <tr>
+                    <td align="center" class="btn w4button" style="color:#000;">
+                        <i class="fas fa-angle-double-left"></i>
+                    </td>
+                    <td>Move to previous year/month/day</td>
+
+                </tr>
+                <tr>
+                    <td align="center" class="btn w4button" style="color:#000; ">
+                        <i class="fas fa-angle-double-right"></i>
+                    </td>
+                    <td>Move to next year/month/day</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <table style="position:relative; float:left; margin-left:30px; margin-top:215px">
+
+        <tr>
+            <td></td>
+            @if (Model.upText != null && Model.upText != "0")
+            {
+                <td>
+                    <button str='@Html.Raw(Model.upQuery)' class="btn w4button" style="display: block; margin: auto;">
+                        <i class="fas fa-angle-double-up"></i>
+                    </button>
+                </td>
+            }
+        </tr>
+        <tr>
+            <td style="display: block; margin: auto;">
+                @if (Model.leftText != null)
+                {
+                    <button str='@Html.Raw(Model.leftQuery)' class="btn w4button" style="display: block; margin: auto;">
+                        <i class="fas fa-angle-double-left"></i>
+                    </button>
+                }
+            </td>
+
+            <td>
+                @if (Model.alerts != null && Model.alerts.Count > 0)
+                {
+                    <button class="wmbutton" style="display: block; margin: auto; background-color: red;">
+                        @Html.Raw(Model.middleText)
+                    </button>
+                }
+                else
+                {
+                    <button class="wmbutton" style="display: block; margin: auto; background-color: rgb(16, 230, 16);">
+                        @Html.Raw(Model.middleText)
+                    </button>
+                }
+            </td>
+            @if (Model.rightText != null)
+            {
+                <td>
+                    <button str='@Html.Raw(Model.rightQuery)' class="btn w4button" style="display: block; margin: auto;">
+                        <i class="fas fa-angle-double-right"></i>
+                    </button>
+                </td>
+            }
+        </tr>
+        <tr>
+            <td></td>
+            @if (Model.downText != null)
+            {
+                <td>
+                    <button str='@Html.Raw(Model.downQuery)' class="btn w4button" style="display: block; margin: auto;">
+                        <i class="fas fa-angle-double-down"></i>
+                    </button>
+                </td>
+            }
+        </tr>
+
+    </table>
+
+    <script>
+        [].forEach.call(document.querySelectorAll('.w4button'), function (elem) {
+            var query = elem.getAttribute("str");
+            elem.addEventListener("click", function (e) {
+                window.location.href = window.location.href.split('?')[0] + query;
+            });
+        });
+    </script>
+
+
+    <div id="charts">
+        <svg width="800" height="500" style="clear:right"></svg>
+    </div>
+</div>
+
+<script>
+        var xLabel = '@Html.Raw(Model.xLabel)';
+        var yLabel = '@Html.Raw(Model.yLabel)';
+
+        function createChartLegend(mainDiv, group) {
+            var z = d3.scaleOrdinal(["rgb(255, 95, 95)", "rgb(255, 180, 188)", "rgb(255, 230, 230)"]);
+            var mainDivName = mainDiv.substr(1, mainDiv.length);
+            $(mainDiv).before("<div id='Legend_" + mainDivName + "' class='pmd-card-body' style='margin-top:0; margin-bottom:0;'></div>");
+            var keys = group;
+            keys.forEach(function(d) {
+                var cloloCode = z(d);
+                $("#Legend_" + mainDivName).append("<span class='team-graph team1' style='display: inline-block; margin-right:10px;'>\
+          			<span style='background:" + cloloCode +
+                    ";width: 10px;height: 10px;display: inline-block;vertical-align: middle;'>&nbsp;</span>\
+          			<span style='padding-top: 0;font-family:Source Sans Pro, sans-serif;font-size: 13px;display: inline;'>" + d +
+                    " </span>\
+          		</span>");
+            });
+
+        }
+        var group = ["High severity", "Medium severity", "Low severity"];
+        var parseDate = d3.timeFormat(yLabel);
+        var mainDiv = "#charts";
+        var mainDivName = "charts";
+        createChartLegend(mainDiv, group);
+        var salesData = @Html.Raw(Model.months);
+
+        salesData.forEach(function(d) {
+            d = type(d);
+        });
+        var layers = d3.stack()
+            .keys(group)
+            .offset(d3.stackOffsetDiverging)
+            (salesData);
+
+        var svg = d3.select("svg"),
+            margin = {
+                top: 20,
+                right: 30,
+                bottom: 60,
+                left: 60
+            },
+            width = +svg.attr("width"),
+            height = +svg.attr("height");
+
+        var x = d3.scaleBand()
+            .rangeRound([margin.left, width - margin.right])
+            .padding(0.1);
+
+        x.domain(salesData.map(function(d) {
+            return d.date;
+        }))
+
+        var y = d3.scaleLinear()
+            .rangeRound([height - margin.bottom, margin.top]);
+
+        y.domain([d3.min(layers, stackMin), d3.max(layers, stackMax)])
+
+        function stackMin(layers) {
+            return d3.min(layers, function(d) {
+                return d[0];
+            });
+        }
+
+        function stackMax(layers) {
+            return d3.max(layers, function(d) {
+                return d[1];
+            });
+        }
+
+        var z = d3.scaleOrdinal(["rgb(255, 95, 95)", "rgb(255, 180, 188)", "rgb(255, 230, 230)"]);
+
+        var maing = svg.append("g")
+            .selectAll("g")
+            .data(layers);
+        var g = maing.enter().append("g")
+            .attr("fill", function(d) {
+                return z(d.key);
+            });
+
+        var rect = g.selectAll("rect")
+            .data(function(d) {
+                d.forEach(function(d1) {
+                    d1.key = d.key;
+                    return d1;
+                });
+                return d;
+            })
+            .enter().append("rect")
+            .attr("data", function(d) {
+                var data = {};
+                data["key"] = d.key;
+                data["value"] = d.data[d.key];
+                var total = 0;
+                group.map(function(d1) {
+                    total = total + d.data[d1]
+                });
+                data["total"] = total;
+                return JSON.stringify(data);
+            })
+            .attr("width", x.bandwidth)
+            .attr("x", function(d) {
+                return x(d.data.date);
+            })
+            .attr("y", function(d) {
+                return y(d[1]);
+            })
+            .attr("height", function(d) {
+                return y(d[0]) - y(d[1]);
+            });
+
+        rect.on("mouseover", function() {
+            var currentEl = d3.select(this);
+            var fadeInSpeed = 120;
+            d3.select("#recttooltip_" + mainDivName)
+                .transition()
+                .duration(fadeInSpeed)
+                .style("opacity", function() {
+                    return 1;
+                });
+            d3.select("#recttooltip_" + mainDivName).attr("transform", function(d) {
+                var mouseCoords = d3.mouse(this.parentNode);
+                var xCo = 0;
+                if (mouseCoords[0] + 10 >= width * 0.80) {
+                    xCo = mouseCoords[0] - parseFloat(d3.selectAll("#recttooltipRect_" + mainDivName)
+                        .attr("width"));
+                } else {
+                    xCo = mouseCoords[0] + 10;
+                }
+                var x = xCo;
+                var yCo = 0;
+                if (mouseCoords[0] + 10 >= width * 0.80) {
+                    yCo = mouseCoords[1] + 10;
+                } else {
+                    yCo = mouseCoords[1];
+                }
+                var x = xCo;
+                var y = yCo;
+                return "translate(" + x + "," + y + ")";
+            });
+            //CBT:calculate tooltips text
+            var tooltipData = JSON.parse(currentEl.attr("data"));
+            var tooltipsText = "";
+            d3.selectAll("#recttooltipText_" + mainDivName).text("");
+            var yPos = 0;
+            d3.selectAll("#recttooltipText_" + mainDivName).append("tspan").attr("x", 0).attr("y", yPos * 10).attr("dy", "1.9em").text(tooltipData.key + ":  " + tooltipData.value);
+            yPos = yPos + 1;
+            d3.selectAll("#recttooltipText_" + mainDivName).append("tspan").attr("x", 0).attr("y", yPos * 10).attr("dy", "1.9em").text("Total" + ":  " + tooltipData.total);
+            //CBT:calculate width of the text based on characters
+            var dims = helpers.getDimensions("recttooltipText_" + mainDivName);
+            d3.selectAll("#recttooltipText_" + mainDivName + " tspan")
+                .attr("x", dims.w + 4);
+
+            d3.selectAll("#recttooltipRect_" + mainDivName)
+                .attr("width", dims.w + 10)
+                .attr("height", dims.h + 20);
+
+        });
+
+        rect.on("mousemove", function() {
+            var currentEl = d3.select(this);
+            currentEl.attr("r", 7);
+            d3.selectAll("#recttooltip_" + mainDivName)
+                .attr("transform", function(d) {
+                    var mouseCoords = d3.mouse(this.parentNode);
+                    var xCo = 0;
+                    if (mouseCoords[0] + 10 >= width * 0.80) {
+                        xCo = mouseCoords[0] - parseFloat(d3.selectAll("#recttooltipRect_" + mainDivName)
+                            .attr("width"));
+                    } else {
+                        xCo = mouseCoords[0] + 10;
+                    }
+                    var x = xCo;
+                    var yCo = 0;
+                    if (mouseCoords[0] + 10 >= width * 0.80) {
+                        yCo = mouseCoords[1] + 10;
+                    } else {
+                        yCo = mouseCoords[1];
+                    }
+                    var x = xCo;
+                    var y = yCo;
+                    return "translate(" + x + "," + y + ")";
+                });
+        });
+        rect.on("mouseout", function() {
+            var currentEl = d3.select(this);
+            d3.select("#recttooltip_" + mainDivName)
+                .style("opacity", function() {
+                    return 0;
+                })
+                .attr("transform", function(d, i) {
+                    // klutzy, but it accounts for tooltip padding which could push it onscreen
+                    var x = -500;
+                    var y = -500;
+                    return "translate(" + x + "," + y + ")";
+                });
+        });
+
+        svg.append("g")
+            .attr("transform", "translate(0," + y(0) + ")")
+            .call(d3.axisBottom(x))
+            .append("text")
+            .attr("x", width / 2)
+            .attr("y", margin.bottom * 0.5)
+            .attr("dx", "0.32em")
+            .attr("fill", "#000")
+            .attr("font-weight", "bold")
+            .attr("text-anchor", "start")
+            .text(xLabel);
+
+        svg.append("g")
+            .attr("transform", "translate(" + margin.left + ",0)")
+            .call(d3.axisLeft(y))
+            .append("text")
+            .attr("transform", "rotate(-90)")
+            .attr("x", 0 - (height / 2))
+            .attr("y", 15 - (margin.left))
+            .attr("dy", "0.32em")
+            .attr("fill", "#000")
+            .attr("font-weight", "bold")
+            .attr("text-anchor", "middle")
+            .text("Events");
+
+        var rectTooltipg = svg.append("g")
+            .attr("font-family", "sans-serif")
+            .attr("font-size", 10)
+            .attr("text-anchor", "end")
+            .attr("id", "recttooltip_" + mainDivName)
+            .attr("style", "opacity:0")
+            .attr("transform", "translate(-500,-500)");
+
+        rectTooltipg.append("rect")
+            .attr("id", "recttooltipRect_" + mainDivName)
+            .attr("x", 0)
+            .attr("width", 120)
+            .attr("height", 80)
+            .attr("opacity", 0.71)
+            .style("fill", "#000000");
+
+        rectTooltipg
+            .append("text")
+            .attr("id", "recttooltipText_" + mainDivName)
+            .attr("x", 30)
+            .attr("y", 15)
+            .attr("fill", function() {
+                return "#fff"
+            })
+            .style("font-size", function(d) {
+                return 10;
+            })
+            .style("font-family", function(d) {
+                return "arial";
+            })
+            .text(function(d, i) {
+                return "";
+            });
+
+
+        function type(d) {
+            d.date = parseDate(new Date(d.date));
+            group.forEach(function(c) {
+                d[c] = +d[c];
+            });
+            return d;
+        }
+
+        var helpers = {
+            getDimensions: function(id) {
+                var el = document.getElementById(id);
+                var w = 0,
+                    h = 0;
+                if (el) {
+                    var dimensions = el.getBBox();
+                    w = dimensions.width;
+                    h = dimensions.height;
+                } else {
+                    console.log("error: getDimensions() " + id + " not found.");
+                }
+                return {
+                    w: w,
+                    h: h
+                };
+            }
+        };
+</script>
+
+
+
+
+
+@{///////////////////////////////////////////////////ATTACKERS////////////////////////////////////////////////////
+}
+@{ if (!Model.noevents)
+    {
+        <section class="endpointsContainer">
+            <div class="endpoint border-title">
+                <div class="graph-title" style="border-style:outset; border-color:lightgrey">
+                    Top IP sources (@Html.Raw(Model.middleText))
+                </div>
+                <div id="pieChart"></div>
+            </div>
+            <div class="endpoint2 border-title">
+                <div class="graph-title" style="border-style:outset; border-color:lightgrey">
+                    Top IP destinations (@Html.Raw(Model.middleText))
+                </div>
+                <div id="pieChart2"></div>
+            </div>
+
+        </section>
+    }
+}
+<script>
+var startFilter = '@Html.Raw(Model.timeFilterStart)';
+var endFilter = '@Html.Raw(Model.timeFilterEnd)';
+var pie = new d3pie("pieChart", {
+	"header": {
+		/*"title": {
+			"text": "Top attackers (IP)",
+			"fontSize": 24,
+			"font": "open sans"
+		},*/
+		"titleSubtitlePadding": 9
+	},
+	"footer": {
+		"color": "#999999",
+		"fontSize": 10,
+		"font": "open sans",
+		"location": "bottom-left"
+	},
+	"size": {
+		"canvasWidth": 560,
+		"canvasHeight": 400,
+		"pieInnerRadius": "20%",
+		"pieOuterRadius": "60%"
+	},
+	"data": {
+		"sortOrder": "value-desc",
+		"smallSegmentGrouping": {
+			"enabled": true
+		},
+		"content": @Html.Raw(Model.attackers)
+	},
+	"labels": {
+		"outer": {
+			//"hideWhenLessThanPercentage": 2,
+			"pieDistance": 50
+		},
+		"inner": {
+			"hideWhenLessThanPercentage": 3
+		},
+		"mainLabel": {
+			"fontSize": 12
+		},
+		"percentage": {
+			"color": "#ffffff",
+			"fontSize": 15,
+			"decimalPlaces": 0
+		},
+		"value": {
+			"color": "#adadad",
+			"fontSize": 15
+		},
+		"lines": {
+			"enabled": true,
+			//"style": "straight"
+		}
+	},
+	"tooltips": {
+		"enabled": true,
+		"type": "placeholder",
+		"string": "{label}: {value}, {percentage}%",
+		"styles": {
+			"fontSize": 12,
+			"fadeInSpeed": 1000
+		}
+	},
+	"effects": {
+		"load": {
+			"speed": 300
+		},
+		"pullOutSegmentOnClick": {
+			"effect": "elastic",
+			"speed": 1000,
+			"size": 15
+		}
+	},
+	"misc": {
+		"gradient": {
+			"enabled": true,
+			"percentage": 100
+        },
+        "pieCenterOffset": {
+            "x": -50,
+            "y": -35
+        }
+
+
+	},
+	"callbacks": {
+		onClickSegment: function(a) {
+			//alert("Segment clicked! See the console for all data passed to the click handler.");
+			console.log(a);
+			if(a.data.label == "Other"){
+				return;
+			}
+			window.open("Events?src-ip-contains=" + a.data.label);
+		}
+	}
+});
+</script>
+
+@{///////////////////////////////////////////////////TARGETS////////////////////////////////////////////////////
+}
+<script>
+    var pie = new d3pie("pieChart2", {
+	"header": {
+		/*"title": {
+            "text": "Top destinations (IP)",
+			"fontSize": 24,
+            "font": "open sans",
+            "background-style": "solid"
+		},*/
+		"titleSubtitlePadding": 9
+	},
+	"footer": {
+		"color": "#999999",
+		"fontSize": 10,
+		"font": "open sans",
+		"location": "bottom-left"
+	},
+	"size": {
+        "canvasWidth": 560,
+        "canvasHeight": 400,
+        "pieInnerRadius": "20%",
+        "pieOuterRadius": "60%"
+	},
+	"data": {
+		"sortOrder": "value-desc",
+		"smallSegmentGrouping": {
+			"enabled": true
+		},
+		"content": @Html.Raw(Model.targets)
+	},
+	"labels": {
+		"outer": {
+			//"hideWhenLessThanPercentage": 2,
+			"pieDistance": 50
+		},
+		"inner": {
+			"hideWhenLessThanPercentage": 3
+		},
+		"mainLabel": {
+			"fontSize": 12
+		},
+		"percentage": {
+			"color": "#ffffff",
+			"fontSize": 15,
+			"decimalPlaces": 0
+		},
+		"value": {
+			"color": "#adadad",
+			"fontSize": 12
+		},
+		"lines": {
+			"enabled": true,
+			//"style": "straight"
+		},
+
+	},
+	"tooltips": {
+		"enabled": true,
+		"type": "placeholder",
+		"string": "{label}: {value}, {percentage}%",
+		"styles": {
+            "fontSize": 12,
+			"fadeInSpeed": 1000
+		}
+	},
+	"effects": {
+		"load": {
+			"speed": 300
+		},
+		"pullOutSegmentOnClick": {
+			"effect": "elastic",
+			"speed": 1000,
+			"size": 15
+		}
+	},
+	"misc": {
+		"gradient": {
+			"enabled": true,
+			"percentage": 100
+        },
+        "pieCenterOffset": {
+            "x": -50,
+            "y": -35
+        }
+
+
+	},
+	"callbacks": {
+		onClickSegment: function(a) {
+			if(a.data.label == "Other"){
+				return;
+			}
+			console.log(a);
+			window.open("Events?dest-ip-contains=" + a.data.label);
+		}
+	}
+});
+</script>
+
+@{////////////////////////////////////////////////////////LAST 10 Events:////////////////////////////////////////////////:
+}
+<div class="graph-title border-title">
+    <div style="border-style:outset; border-color:lightgrey">
+        10 newest events
+    </div>
+    <div style="clear: left; text-align:left;" width="1500">
+        @Html.AjaxGrid(Url.Page("IndexGrid", new { id = "my-ajax-grid", ls = @Model.lastTime.Ticks }))
+    </div>
+</div>
+@{//////////////////////////////////////////////////////////////Event-DROPS////////////////////////////////////////////////:
+}
+@{ if (!Model.noevents)
+    {
+        <style>
+            .y-tick {
+                stroke: black;
+                fill: none;
+                stroke-width: 1px;
+            }
+
+            .line-separator, .x-axis {
+                stroke: #777;
+                fill: none;
+                stroke-width: 1px;
+            }
+
+            .drop-line:last-child .line-separator {
+                display: none;
+            }
+
+            .line-label {
+                cursor: pointer;
+            }
+
+            .event-drop-chart {
+                cursor: all-scroll;
+            }
+
+            .tooltip {
+                background-color: black;
+                padding: 5px;
+                color: white;
+            }
+        </style>
+
+        <div class="border-title">
+            <div class="graph-title" style="margin-bottom: 20px;position:inherit;">
+                <div style="border-style:outset; border-color:lightgrey">
+                    Events by Signature (@Html.Raw(Model.middleText))
+                </div>
+
+            </div>
+            <div id="events" width="800" style="position:relative;"></div>
+        </div>
+
+        <script>
+var global = this;
+const repositoriesData = @Html.Raw(Model.timeline);
+const tultip = d3
+    .select('body')
+    .append('div')
+    .classed('tooltip', true)
+    .style('opacity', 0)
+    .style('pointer-events', 'auto');
+
+
+    var chart = eventDrops({
+        line: {
+            color: function (row) {
+                return row.color;
+            },
+        },
+
+
+	range: {
+		start: @Html.Raw(Model.timelineStart),
+    	end: @Html.Raw(Model.timelineEnd)
+  	},
+  	drop: {
+        date: function(d) {return  d.date;},
+
+      },
+    indicator:{previousText:"◀",nextText:"▶"},
+    width:500,
+    label:{
+        sname: function(row) {
+            return row.name;
+        },
+        text: function(row) {
+        if(row.name.length > 30) return row.name.substring(0, 27) + '... (' + row.data.length + ')';
+        return row.name.substring(0, 30) + ' (' + row.data.length + ')';
+    }
+    },
+    zoom: {
+    minimumScale: 1,
+    },
+});
+
+d3.select('#events').data([repositoriesData]).call(chart);
+    [].forEach.call(document.querySelectorAll('.line-label'), function(elem) {
+        var cont = elem.getAttribute("sname");
+        var startFilter = '@Html.Raw(Model.timeFilterStart)';
+        var endFilter = '@Html.Raw(Model.timeFilterEnd)';
+    elem.addEventListener("click", function(e) {
+        window.open("Events?desc-contains=" + cont + "&time-earlier-than-or-equal=" + endFilter +
+        "&time-op=and&time-later-than-or-equal=" + startFilter);
+        console.log(cont);
+    });
+    elem.addEventListener("mouseover", function(e) {
+        var ypos = e.pageY - 30;
+               tultip
+                .transition()
+                .duration(0)
+                .style('opacity', 1)
+                .style('pointer-events', 'auto');
+
+            tultip
+                .html("<div class=\"commit\"><div class=\"content\"><div class=\"message\">" + cont + "</div></div>")
+                .style('left', e.pageX + "px")
+                .style('top', ypos +"px");
+
+    });
+    elem.addEventListener("mouseout", function(e) {
+            tultip
+                .transition()
+                .duration(500)
+                .style('opacity', 0)
+                .style('pointer-events', 'none');
+    });
+
+            });
+        </script>
+    }
+
+}
+<script>
+    [].forEach.call(document.getElementsByClassName('mvc-grid'), function (element) {
+        new MvcGrid(element, {
+            requestType: 'get',
+        });
+    });
+</script>
+@{ if (Model.noalerts)
+    {
+        <style>
+            .mvc-grid tbody tr {
+                cursor: auto;
+                background-color: whitesmoke;
+            }
+        </style>
+        <script>
+            window.noclick = 1;
+        </script>
+    }
+    else
+    {
+        <style>
+            .mvc-grid tbody tr {
+                cursor: pointer;
+            }
+            .mvc-grid tr:hover {
+                background: red;
+            }
+        </style>
+    }
+}
+
+
+
+
+
+
+
+
+

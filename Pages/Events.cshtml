@@ -1,0 +1,116 @@
+﻿@page
+@model IndexGridModelBig
+@using NonFactors.Mvc.Grid
+
+@{
+    ViewData["Title"] = "All Events";
+}
+
+<link href="~/Content/MvcGrid/mvc-grid.css" rel="stylesheet">
+<link rel="stylesheet" href="~/Content/FontAwesome/css/all.css">
+<style>
+    .filterbutt {
+        float: right;
+    }
+</style>
+@{if (Model.alerts.Count() == 0)
+    {
+        <style>
+            .mvc-grid tbody tr {
+                cursor: auto;
+                background-color: whitesmoke;
+            }
+        </style>
+        <script>
+            window.noclick = 1;
+        </script>
+    }
+    else
+    {
+        <style>
+            .mvc-grid tbody tr {
+                cursor: pointer;
+            }
+
+            .mvc-grid tr:hover {
+                background: red;
+            }
+        </style>
+    }
+}
+
+@{//<input class="mvc-grid-search" type="text" placeholder="Search...">
+}
+
+
+@(Html
+        .Grid(Model.alerts)
+        .Build(columns =>
+        {
+        columns.Add(model => "<a href=Detail?cid=" + model.cid + "&sid=" + model.sid + ">" + model.sid + ":" + model.cid + "</a>").Titled("ID").Encoded(false);
+        columns.Add(model => model.priority).Titled("Priority");
+        columns.Add(model => model.src_ip).Titled("Source IP");
+        columns.Add(model => model.dest_ip).Titled("Destination IP");
+        columns.Add(model => model.desc).Titled("Signature");
+        columns.Add(model => model.time).Titled("Time").InitialSort(GridSortOrder.Desc).Css("fixedColumn");
+        })
+        .RowAttributed(model => new
+        {
+            data_cid = model.cid,
+            data_sid = model.sid
+        })
+        .Empty("No data found")
+        .MultiFilterable()
+        .RowCss(model => model.time > Model.lastTime ? model.priority == 1 ? "prio1b" : model.priority == 2 ? "prio2b" : "prio3b"
+                                                    : model.priority == 1 ? "prio1" : model.priority == 2 ? "prio2" : "prio3")
+        //.RowCss(model => model.time > Model.lastTime ? "bolded" : "")
+        .Pageable(pager =>
+        {
+            pager.PageSizes = new Dictionary<Int32, String> { { 15, "15" }, { 0, "All" } };
+            pager.ShowPageSizes = true;
+            pager.PagesToDisplay = 3;
+            pager.CssClasses = "savebutton";
+        })
+        .Sortable()
+
+)
+
+<script>
+
+    if (document.filter != "" && document.filter == window.location.search) {
+        document.getElementById("saveText").innerHTML = "<i class=\"fas fa-filter fa-rotate-180\" id=\"saveText\ style=\"visibility:visible;\"></i>&nbsp Clear filters &nbsp";
+        document.getElementById("saveText").style.visibility = "visible";
+    }
+    else if (window.location.search != "") {
+        document.getElementById("saveText").innerHTML = "<i class=\"fas fa-filter\"id=\"saveText\" style=\"visibility:visible;\"></i>&nbsp Save filters &nbsp";
+        document.getElementById("saveText").style.visibility = "visible";
+    }
+    else {
+        document.getElementById("saveText").style.visibility = "hidden";
+    }
+
+    function saveFilter() {
+        if (document.filter == "" || document.filter != window.location.search) {
+            var value = window.location.search;
+            if (value == "") return
+            var d = new Date();
+            var exdays = 100;
+            d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+            var expires = "expires=" + d.toUTCString();
+            document.cookie = "filter=" + value + ";" + expires + ";path=/";
+            document.filter = value;
+            document.getElementById("saveText").innerHTML = "<i class=\"fas fa-filter fa-rotate-180\"id=\"saveText\"></i>&nbsp Clear filters &nbsp";
+        }
+
+        //Clear them
+        else {
+            //document.getElementById("saveText").innerHTML = "<i class=\"fas fa-filter\"id=\"saveText\"></i>&nbsp Save filters &nbsp";
+            document.cookie = "filter=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            document.filter = "";
+            window.location = window.location.href.split("?")[0];
+        }
+    }
+</script>
+
+
+

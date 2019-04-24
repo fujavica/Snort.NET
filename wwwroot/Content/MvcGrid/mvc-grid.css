@@ -1,0 +1,467 @@
+﻿/*!
+ * Mvc.Grid 4.0.1
+ * https://github.com/NonFactors/MVC6.Grid
+ *
+ * Copyright © NonFactors
+ *
+ * Licensed under the terms of the MIT License
+ * http://www.opensource.org/licenses/mit-license.php
+ */
+
+@font-face {
+    font-family: 'GridGlyphs';
+    src: url('../MvcGrid/Fonts/GridGlyphs.woff') format('woff');
+}
+.fixedColumn{
+    width: 150px;
+}
+.dropdown-content a {
+    cursor: pointer;
+}
+.navbar-nav a{
+    cursor: pointer;
+}
+.highlightRow{
+    background:rgb(255, 182, 48);
+}
+
+
+.prio3{
+    background: rgb(255, 230, 230);
+   
+}
+.prio2{
+    background:rgb(255, 180, 188);
+}
+.prio1{
+    background:rgb(255, 95, 95);
+}
+
+
+.prio3b{
+    font-weight: bold;
+    background: rgb(255, 230, 230);
+   
+}
+.prio2b{
+    font-weight: bold;
+    background:rgb(255, 180, 188);
+}
+.prio1b{
+    font-weight: bold;
+    background:rgb(255, 95, 95);
+}
+
+.button-container form,
+.button-container form div {
+    display: inline;
+}
+
+
+.button-container button {
+    margin-right: 20px;
+    display: inline;
+    vertical-align: middle;
+}
+
+.bolded {
+    font-weight: bold;
+}
+
+.selected {
+    background-color: rgba(0, 0, 0, 0.075);
+}
+
+.centered{
+    text-align: center; 
+}
+
+
+
+.mvc-grid {
+    line-height: 1.25em;
+    position: relative;
+    overflow-x: auto;
+    font-size: 1.3rem;
+}
+
+.mvc-grid table {
+    border-collapse: collapse;
+    max-width: 100%;
+    width: 100%;
+}
+
+.mvc-grid th {
+    background-clip: padding-box;
+    background-color: #f7f7f7;
+    position: relative;
+}
+
+.mvc-grid th,
+.mvc-grid td {
+    border: 1px solid #dee2e6;
+    padding: 0.75em;
+}
+
+.mvc-grid .filterable {
+    padding-right: 3.5em;
+}
+
+.mvc-grid .sortable,
+.mvc-grid .mvc-grid-filter {
+    cursor: pointer;
+}
+
+.mvc-grid .asc::after {
+    padding-left: 3px;
+    content: '\2193';
+}
+
+.mvc-grid .desc::after {
+    padding-left: 3px;
+    content: '\2191';
+}
+
+.mvc-grid-hidden,
+.mvc-grid-options {
+    display: none;
+}
+
+.mvc-grid-filter {
+    background-color: rgba(0, 0, 0, 0.03);
+    transition: background-color 0.5s;
+    font-family: 'GridGlyphs';
+    position: absolute;
+    font-weight: bold;
+    width: 2.75em;
+    border: none;
+    height: 100%;
+    right: 0;
+    top: 0;
+}
+
+.mvc-grid-filter:focus,
+.mvc-grid-filter:hover {
+    background-color: rgba(0, 0, 0, 0.06);
+    color: inherit;
+}
+
+.mvc-grid-filter::before {
+    content: '\0041';
+}
+
+.mvc-grid-filter.applied::before {
+    content: '\0042';
+}
+
+.mvc-grid-row-filters .filterable {
+    padding: 0.25em;
+}
+
+.mvc-grid-row-filters th div {
+    display: flex;
+}
+
+.mvc-grid-row-filters .mvc-grid-value {
+    border: 0.5px solid #aaaaaa;
+    margin-right: 0.25em;
+    padding: 0 0.2em;
+    font: inherit;
+    flex: 1;
+}
+
+.mvc-grid-row-filters input.mvc-grid-value {
+    padding: 0 0.5em;
+}
+
+.mvc-grid-row-filters .mvc-grid-value.invalid {
+    outline-color: #dc3545;
+}
+
+.mvc-grid-row-filters .mvc-grid-value::placeholder {
+    color: #bbbbbb;
+}
+
+.mvc-grid-row-filters .mvc-grid-value:-ms-input-placeholder {
+    color: #bbbbbb;
+}
+
+.mvc-grid-row-filters .mvc-grid-filter {
+    border: 0.5px solid #aaaaaa;
+    flex: 0 0 2.125em;
+    position: static;
+    height: 2.125em;
+}
+
+.mvc-grid-row-filters [readonly] {
+    background-color: #e4e4e4;
+}
+
+.mvc-grid-row-filters.mvc-grid-headers .filterable {
+    padding: 0;
+}
+
+.mvc-grid-row-filters.mvc-grid-headers .mvc-grid-value {
+    padding: 0.75em 3.5em 0.75em 0.75em;
+    background-color: #f7f7f7;
+    border: none;
+    margin: 0;
+}
+
+.mvc-grid-row-filters.mvc-grid-headers .mvc-grid-filter {
+    position: absolute;
+    border: none;
+    height: 100%;
+}
+
+.mvc-grid-popup {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.176);
+    background-clip: padding-box;
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    position: absolute;
+    min-width: 12em;
+    font-size: 1rem;
+    z-index: 1100;
+}
+
+.mvc-grid-popup.mvc-grid-guid-filter {
+    min-width: 20em;
+}
+
+.mvc-grid-popup .popup-arrow {
+    border-right: 7px solid transparent;
+    border-left: 7px solid transparent;
+    border-bottom: 8px solid #ffffff;
+    box-sizing: border-box;
+    position: absolute;
+    height: 9px;
+    top: -8px;
+}
+
+.mvc-grid-popup .popup-arrow::after {
+    border-right: 8px solid transparent;
+    border-left: 8px solid transparent;
+    border-bottom: 9px solid #cccccc;
+    position: absolute;
+    content: " ";
+    z-index: -1;
+    left: -8px;
+    top: -1px;
+}
+
+.mvc-grid-popup .popup-content {
+    padding: 0.5em;
+}
+
+.mvc-grid-popup .popup-group {
+    padding: 0.2em;
+}
+
+.mvc-grid-popup .popup-operator {
+    text-align: center;
+}
+
+.mvc-grid-popup .popup-actions {
+    padding: 0.4em 0 0.2em;
+    text-align: center;
+}
+
+.mvc-grid-popup .mvc-grid-value,
+.mvc-grid-popup .mvc-grid-method,
+.mvc-grid-popup .mvc-grid-operator {
+    border: 1px solid #cccccc;
+    box-sizing: border-box;
+    font-size: 0.9em;
+    padding: 0 0.2em;
+    height: 2.5em;
+    width: 100%;
+}
+
+.mvc-grid-popup .mvc-grid-operator {
+    width: auto;
+}
+
+.mvc-grid-popup input.mvc-grid-value {
+    padding: 0 0.5em;
+}
+
+.mvc-grid-popup .mvc-grid-value.invalid {
+    outline-color: #dc3545;
+}
+
+.mvc-grid-popup .mvc-grid-apply,
+.mvc-grid-popup .mvc-grid-cancel {
+    border: 1px solid #ffffff;
+    padding: 0.25em;
+    cursor: pointer;
+    min-width: 4em;
+    color: #ffffff;
+    outline: 0;
+}
+
+.mvc-grid-popup .mvc-grid-apply {
+    background-color: #28a745;
+    border-color: #28a745;
+    margin-right: 0.3em;
+}
+
+.mvc-grid-popup .mvc-grid-apply:focus {
+    box-shadow: 0 0 0 0.2em rgba(40, 167, 69, 0.5);
+}
+
+.mvc-grid-popup .mvc-grid-cancel {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    margin-left: 0.3em;
+}
+
+.mvc-grid-popup .mvc-grid-cancel:focus {
+    box-shadow: 0 0 0 0.2em rgba(220, 53, 69, 0.5);
+}
+
+.mvc-grid-pager,
+.mvc-grid-empty-row {
+    cursor: auto;
+    background-color: whitesmoke;
+    text-align: center;
+}
+
+.mvc-grid-pager {
+    margin: 0.5em;
+}
+
+.mvc-grid-pager button {
+    background-color: #ffffff;
+    border: 1px solid #dddddd;
+    box-sizing: content-box;
+    line-height: 2.5em;
+    padding: 0 0.25em;
+    cursor: pointer;
+    min-width: 2em;
+    color: #337ab7;
+}
+
+.mvc-grid-pager button:focus,
+.mvc-grid-pager button:hover {
+    background-color: #f7f7f7;
+    color: #014c8c;
+}
+
+.mvc-grid-pager .active,
+.mvc-grid-pager .active:focus,
+.mvc-grid-pager .active:hover {
+    background-color: #0275d8;
+    border-color: #0275d8;
+    color: #ffffff;
+}
+
+.mvc-grid-pager .disabled,
+.mvc-grid-pager .disabled:focus,
+.mvc-grid-pager .disabled:hover {
+    background-color: #efefef;
+    cursor: not-allowed;
+    color: #777777;
+    outline: none;
+}
+
+.mvc-grid-page-sizes {
+    display: inline-block;
+    margin-left: 0.5em;
+}
+
+.mvc-grid-page-sizes select {
+    border: 1px solid #dddddd;
+    padding: 0.5em 0;
+    font: inherit;
+}
+
+.mvc-grid-page-sizes input {
+    border: 1px solid #dddddd;
+    box-sizing: content-box;
+    text-align: center;
+    padding: 0 0.25em;
+    height: 2.5em;
+    width: 2.5em;
+}
+
+.mvc-grid-loader {
+    background-color: rgba(0, 0, 0, 0.3);
+    justify-content: center;
+    transition: opacity 1s;
+    align-items: center;
+    position: absolute;
+    display: flex;
+    z-index: 100;
+    height: 100%;
+    cursor: wait;
+    width: 100%;
+    opacity: 0;
+    left: 0;
+    top: 0;
+}
+
+.mvc-grid-loading {
+    opacity: 1;
+}
+
+.mvc-grid-loading > div > div {
+    animation: loader-points 1.4s infinite ease-in-out both;
+    background-color: #f5f5f5;
+    display: inline-block;
+    border-radius: 100%;
+    margin: 0 0.75em;
+    height: 1.5em;
+    width: 1.5em;
+}
+
+.mvc-grid-loading > div > div:nth-child(1) {
+    animation-delay: -0.32s;
+}
+
+.mvc-grid-loading > div > div:nth-child(2) {
+    animation-delay: -0.16s;
+}
+
+@keyframes loader-points {
+    0%, 80%, 100% {
+        transform: scale(0);
+    }
+
+    40% {
+        transform: scale(1.0);
+    }
+}
+
+    .logo{text-align:center}
+    .logo a{margin-left:.5em;font-size:84px;color:#fff}
+    .logo .version{font-family:'Open Sans',sans-serif;vertical-align:bottom;margin-left:-20px;font-size:14px;line-height:2}
+    .sidebar-search{background:rgba(255,255,255,.7);margin-bottom:20px;border-style:none;text-align:center;color:#000;padding:7px;width:100%}
+    .sidebar ul{background:rgba(255,255,255,.93);font-weight:bold;list-style:none;padding:0}
+    .sidebar ul a{padding:5px 12px;color:#777;display:block}
+    .sidebar ul a:hover,.sidebar ul a:focus{background:#fff;color:#448fba}
+    .sidebar li+li{border-top:1px solid #b8b8b8}.widget{margin-top:20px}
+    .widget-header{
+        margin-top: 20px;
+        border-bottom:1px solid rgba(0, 0, 0, 0.25);
+        align-items:center;padding:8px 12px;
+        color:#fff;
+        font-size:16px;
+        display:flex;
+        background: #8c86d7;
+    }
+    .widget-header>span{padding-left:10px;flex:1}
+    .widget-buttons{cursor:pointer;padding:0 5px; float: right}
+    .widget-buttons a,.widget-buttons span{padding-left:10px;color:#fff}
+    .widget-buttons a:hover,.widget-buttons span:hover{color:#ddd}
+    .widget-content{background:rgba(255,255,255,.93);padding:10px}.action{width:1px}
+    .docs pre{padding:7px 10px}.docs .row{margin-bottom:10px}.docs .widget-header{background:#62bd6b}
+    .console .widget-header{background:#898989}
+    .example .widget-header{background:#8c86d7;}
+    .example .widget-content{background:#fff}
+    .code .widget-header{background:#479ae2}p{margin:10px 0}pre{border:1px solid #e2e2e2;background:#fff;padding:0 15px;margin:0}
+    pre .com{font-weight:bold;color:#15a915}pre .cls{color:#2aadba}pre .kwd{color:#084dff}pre .str{color:#cc6500}
+    .mvc-grid-search{background-color:rgba(255,255,255,.7);text-align:center;margin-left:15px;font-size:.7em;padding:5px 0;color:#000;border:none}
+    .mvc-grid th,.mvc-grid td{border:1px solid #cacaca}
+    .mvc-grid-pager .active a{background-color:rgba(12,123,220,.72);border-color:#3280c1}

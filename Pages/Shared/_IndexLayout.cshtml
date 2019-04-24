@@ -1,0 +1,141 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - razor</title>
+
+    <environment include="Development">
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+        <link href="~/css/custom.css" rel="stylesheet" />
+    </environment>
+    <environment exclude="Development">
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+        <link href="~/css/custom.css" rel="stylesheet" />
+    </environment>
+</head>
+
+<script>
+        function getCookie(cname) {
+    var name = cname + "=";
+    var decodedCookie = decodeURIComponent(document.cookie);
+    var ca = decodedCookie.split(';');
+    for(var i = 0; i <ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
+
+document.filter = getCookie('filter');
+</script>
+
+<body style="background-color:white">
+    <nav class="navbar navbar-inverse navbar-toggleable-sm">
+        <div class="container">
+            <div class="navbar-header">
+                @{/* <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                           <span class="sr-only">Toggle navigation</span>
+                           <span class="icon-bar"></span>
+                           <span class="icon-bar"></span>
+                           <span class="icon-bar"></span>
+                       </button>
+                       */}
+                <a asp-page="/Index" class="navbar-brand" style="color:white;">Snort.NET</a>
+            </div>
+            <div style="font-size:18px">
+                <ul class="nav navbar-nav">
+                    <li><a onclick="window.location='/Events'+document.filter;">All Events</a></li>
+                    <li>
+                        <div class="dropdown">
+                            <button class="dropbtn" style="font-size:18px">
+                                Statistics
+                                <i class="fa fa-caret-down"></i>
+                            </button>
+                            <div class="dropdown-content">
+                                <a onclick="window.location='/Protocols'+document.filter;">Protocols</a>
+                                <a onclick="window.location='/Endpoints'+document.filter;">Endpoints</a>
+                                <a onclick="window.location='/Signatures'+document.filter;">Signatures</a>
+                                <a onclick="window.location='/Origin'+document.filter;">Origin</a>
+                            </div>
+                        </div>
+                    </li>
+                    <li><a asp-page="/About">About</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <partial name="_CookieConsentPartial" />
+
+    <div id="layout" class="container-fluid body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; 2018 - Snort.NET: IDS Snort data analyzer</p>
+        </footer>
+    </div>
+
+    <environment include="Development">
+        <script src="~/lib/jquery/dist/jquery.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+        <script src="~/js/site.js" asp-append-version="true"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.3.1.min.js"
+                asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
+                asp-fallback-test="window.jQuery"
+                crossorigin="anonymous"
+                integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT">
+        </script>
+        <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/bootstrap.min.js"
+                asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.min.js"
+                asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"
+                crossorigin="anonymous"
+                integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa">
+        </script>
+        <script src="~/js/site.min.js" asp-append-version="true"></script>
+    </environment>
+    <script src="~/Scripts/MvcGrid/mvc-grid.js"></script>
+
+    @if (IsSectionDefined("MyScripts"))
+    {
+        @RenderSection("MyScripts")
+    }
+    <script>
+
+        [].forEach.call(document.getElementsByClassName('mvc-grid'), function (element) {
+            new MvcGrid(element, {
+                requestType: 'get',
+            });
+        });
+
+        $('.widget-buttons').click(function () {
+            //console.log('clicked minus');
+            $(this).parent().siblings('.mvc-grid').slideToggle('500');
+            $(this).children().toggleClass('fa-plus fa-minus');
+        });
+
+        if (window.noclick != 1) {
+            var grid = document.querySelector('.body-content');
+            grid.addEventListener('rowclick', function (e) {
+                window.open("Detail?cid=" + e.target.dataset.cid + "&sid=" + e.target.dataset.sid);
+            });
+        }
+
+        $(document).on('keyup', '.mvc-grid-search', function () {
+            $('.mvc-grid').mvcgrid({
+                query: 'search=' + this.value,
+                reload: true
+            });
+        });
+    </script>
+
+</body>
+</html>

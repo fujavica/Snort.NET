@@ -1,0 +1,92 @@
+﻿@using NonFactors.Mvc.Grid;
+
+@model IGridPager
+@{
+    Int32 totalPages = Model.TotalPages;
+    Int32 currentPage = Model.CurrentPage;
+    Int32 firstDisplayPage = Model.FirstDisplayPage;
+    string classess = Model.CssClasses;
+}
+
+<div class="mvc-grid-pager @Model.CssClasses" data-show-page-sizes="@Model.ShowPageSizes">
+    @if(classess == "savebutton")
+    {
+        <button class="filterbutt" id="saveText" onclick="saveFilter();" style="visibility:hidden;">
+            <i class="fas fa-filter"></i>
+            &nbsp Save filters &nbsp
+        </button>
+    }
+    @if (totalPages > 0)
+    {
+        if (currentPage > 1)
+        {
+            <button data-page="1">&laquo;</button>
+            <button data-page="@(currentPage - 1)">&lsaquo;</button>
+        }
+        else
+        {
+            <button class="disabled" tabindex="-1">&laquo;</button>
+            <button class="disabled" tabindex="-1">&lsaquo;</button>
+        }
+        for (Int32 page = firstDisplayPage; page <= totalPages && page < firstDisplayPage + Model.PagesToDisplay; page++)
+        {
+            if (page == currentPage)
+            {
+                <button class="active" data-page="@(page)">@(page)</button>
+            }
+            else
+            {
+                <button data-page="@(page)">@(page)</button>
+            }
+        }
+        if (currentPage < totalPages)
+        {
+            <button data-page="@(currentPage + 1)">&rsaquo;</button>
+            <button data-page="@totalPages">&raquo;</button>
+        }
+        else
+        {
+            <button class="disabled" tabindex="-1">&rsaquo;</button>
+            <button class="disabled" tabindex="-1">&raquo;</button>
+        }
+        if (Model.ShowPageSizes)
+        {
+            <div class="mvc-grid-page-sizes">
+                @if (Model.PageSizes.Count > 0)
+                {
+                    <select class="mvc-grid-pager-rows">
+                        @foreach (KeyValuePair<Int32, String> size in Model.PageSizes)
+                        {
+                            if (Model.RowsPerPage == size.Key)
+                            {
+                                <option value="@size.Key" selected>@size.Value</option>
+                            }
+                            else
+                            {
+                                <option value="@size.Key">@size.Value</option>
+                            }
+                        }
+                    </select>
+
+
+
+         
+                }
+                else
+                {
+                    <input class="mvc-grid-pager-rows" value="@Model.RowsPerPage" />
+                }
+            </div>
+        }
+        else
+        {
+            <input class="mvc-grid-pager-rows" type="hidden" value="@Model.RowsPerPage" />
+        }
+    }
+    else
+    {
+        <input class="mvc-grid-pager-rows" type="hidden" value="@Model.RowsPerPage" />
+    }
+
+
+</div>

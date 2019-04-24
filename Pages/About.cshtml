@@ -1,0 +1,68 @@
+﻿@page
+@model AboutModel
+
+@{
+    ViewData["Title"] = "About";
+}
+<link href="~/Content/MvcGrid/mvc-grid.css" rel="stylesheet">
+
+<div style="margin-bottom:5px">
+    Snort.NET is a powerful web interface for Snort log analysis. Application is build upon a self-contained .NET Core runtime and contains a built-in web server.
+    Web features: 
+</div>
+<div>
+    <a href="/Index" target="_blank">Dashboard</a>
+    – Shows the latest threads on the interactive timeline and most common source/destination hosts and attack signatures from the selected time interval.
+    </br>
+    <a href="/Events" target="_blank">Events</a>
+    – Shows all Snort alerts sorted by the most recent ones.
+    </br>
+    <a href="/Events" target="_blank">Detail</a>
+    – Shows packet associated with specific attack. Allows pcap (requires libpcap) and readable (requires Tcpdump installed) export options.
+    Last bottom table shows Wireshark-like output (requires Tshark installed).
+    </br>
+    <a href="/Protocols" target="_blank">Protocols</a>
+    – Pictures the most common source and destination ports used for attacks.
+    </br>
+    <a href="/Endpoints" target="_blank">Endpoints</a>
+    – Pictures the most common source and destination IP adresses used for attacks.
+    </br>
+    <a href="/Signatures" target="_blank">Signatures</a>
+    – Pictures the most common signatures used for attacks.
+    </br>
+    <a href="/Origin" target="_blank">Origin</a>
+    – Pictures the most common states of origin associated with attacks on a worldwide map.
+    </br>
+</div>
+
+<table style="margin-top:20px">
+    <tr>
+        <td style="font-weight:bold; padding-right:20px">
+            More information:
+        </td>
+        <td>
+            <a href="https://github.com/fujavica/Snort.NET" target="_blank">https://github.com/fujavica/Snort.NET</a>
+        </td>
+    </tr>
+    <tr>
+        <td style="font-weight:bold;">
+            Bug reports:
+        </td>
+        <td>
+            <a href="https://github.com/fujavica/Snort.NET/issues" target="_blank">https://github.com/fujavica/Snort.NET/issues</a>
+        </td>
+    </tr>
+    <tr>
+        <td style="font-weight:bold;">
+            Contact E-mail:
+        </td>
+        <td>
+        <a href="mailto:dominik.raska@gmail.com">dominik.raska@gmail.com</a>
+        </td>
+    </tr>
+</table>
+
+<div style="margin-top:20px">
+    This product includes GeoLite2 data created by MaxMind, available from
+    <a href="https://www.maxmind.com" target="_blank">https://www.maxmind.com</a>.
+</div>

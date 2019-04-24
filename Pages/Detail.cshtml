@@ -1,0 +1,376 @@
+﻿@page
+@model DetailModel
+
+@{
+    ViewData["Title"] = "Event details";
+}
+
+<script>
+    window.noclick = 1;
+</script>
+
+<link href="~/Content/MvcGrid/mvc-grid.css" rel="stylesheet">
+<link rel="stylesheet" href="~/Content/FontAwesome/css/all.css">
+
+<style>
+    .navbar-fixed-top {
+        position: absolute;
+        right: 0;
+        left: 0;
+        z-index: 1030;
+    }
+</style>
+
+@if (Model.errors == null)
+{
+
+    //PCAP
+    <div class="button-container">
+        <form asp-page-handler="pcap" method="post" asp-route-cid="@Model.cid" asp-route-sid="@Model.sid" asp-route-source="@Model.alerts.First().src_ip"
+              asp-route-dest="@Model.alerts.First().dest_ip" asp-route-output="pcap">
+
+            <button class="btn btn-default">
+                Pcap&nbsp&nbsp<span></span><i class="fas fa-angle-double-down"></i>
+            </button>
+        </form>
+
+        <form asp-page-handler="pcap" method="post" asp-route-cid="@Model.cid" asp-route-sid="@Model.sid" asp-route-source="@Model.alerts.First().src_ip"
+              asp-route-dest="@Model.alerts.First().dest_ip" asp-route-output="tcpdump">
+            <button class="btn btn-default">
+                Tcpdump&nbsp&nbsp<i class="fas fa-angle-double-down"></i>
+            </button>
+        </form>
+    </div>
+
+    //////////////////////////////////////////////////////////ALERT/////////////////////////////////////////////////////////////////////
+    if (Model.alerts.Count() != 0)
+    {
+        <div>
+            <div class="example widget-header">
+                <div class="fa fa-bars"></div>
+                <span>Event</span>
+                <div class="widget-buttons">
+                    <span class="fa fa-minus content-toggle"></span>
+                </div>
+            </div>
+
+            @(Html
+                .Grid(Model.alerts)
+                .Build(columns =>
+                {
+                    columns.Add(model => model.sid + ":" + model.cid).Titled("Attack ID");
+                    columns.Add(model => model.priority).Titled("Priority");
+                    columns.Add(model => model.src_ip).Titled("Source IP");
+                    columns.Add(model => model.dest_ip).Titled("Destination IP");
+                    columns.Add(model => model.desc).Titled("Signature");
+                    columns.Add(model => model.time).Titled("Time");
+                })
+                .Empty("No data found"))
+
+        </div>
+    }
+    /////////////////////////////////////////////////SIGNATURE////////////////////////////////////////////////////////}
+
+
+
+    <div>
+        <div class="example widget-header">
+            <div class="fa fa-bars"></div>
+            <span>Signature</span>
+            <div class="widget-buttons">
+
+                <span class="fa fa-minus content-toggle"></span>
+
+            </div>
+        </div>
+
+        @(Html
+            .Grid(Model.signatures)
+            .Build(columns =>
+            {
+                if (Model.className != null)
+                    columns.Add(model => model.class_name).Titled("Class");
+                columns.Add(model => model.sig_name).Titled("Description");
+                columns.Add(model => model.sig_priority).Titled("Priority");
+                columns.Add(model => model.ref_url).Titled("Reference").Encoded(false);
+            })
+            .Empty("No data found"))
+
+    </div>
+
+    /////////////////////////////////////////////////IP-HEADER////////////////////////////////////////////////////////
+
+    <div>
+        <link href="~/Content/MvcGrid/mvc-grid.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+
+        <div class="example widget-header">
+            <div class="fa fa-bars"></div>
+            <span>IP Header</span>
+            <div class="widget-buttons">
+                <span class="fa fa-minus content-toggle"></span>
+            </div>
+        </div>
+
+
+
+        @(Html
+            .Grid(Model.iphdrs)
+            .Build(columns =>
+            {
+                columns.Add(model => "<a href=#whois-source>" + model.source + "</a>").Titled("Source").Css("centered").Encoded(false);
+                columns.Add(model => "<a href=#whois-destination>" + model.destination + "</a>").Titled("Destination").Css("centered").Encoded(false);
+                columns.Add(model => model.ip_ver).Titled("Version").Css("centered");
+                columns.Add(model => model.ip_ttl).Titled("TTL").Css("centered");
+                columns.Add(model => model.protocol).Titled("Protocol").Encoded(false).Css("centered");
+
+            })
+            .Empty("No data found"))
+
+        @(Html
+            .Grid(Model.iphdrs)
+            .Build(columns =>
+            {
+                columns.Add(model => model.ip_hlen).Titled("IHL").Css("centered");
+                columns.Add(model => model.ip_tos).Titled("DSCP").Css("centered");
+                columns.Add(model => model.ip_ecn).Titled("ECN").Css("centered");
+                columns.Add(model => model.ip_len).Titled("Total Length").Css("centered");
+                columns.Add(model => model.ip_id).Titled("Identification").Css("centered");
+                columns.Add(model => model.ip_flags).Titled("Flags").Css("centered");
+                columns.Add(model => model.ip_off).Titled("Fragment Offset").Css("centered");
+                columns.Add(model => model.ip_csum).Titled("Checksum").Css("centered");
+            })
+            .Empty("No data found"))
+    </div>
+    ///////////////////////////////////TCP-HEADER/////////////////////////////////////////////////////////////////////////////////////
+
+    if (Model.tcphdrs.Count() != 0)
+    {
+        <div>
+
+            <link href="~/Content/MvcGrid/mvc-grid.css" rel="stylesheet">
+            <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+
+            <div class="example widget-header">
+                <div class="fa fa-bars"></div>
+                <span>TCP Header</span>
+                <div class="widget-buttons">
+                    <span class="fa fa-minus content-toggle"></span>
+                </div>
+            </div>
+
+
+            @(Html
+                .Grid(Model.tcphdrs)
+                .Build(columns =>
+                {
+                    columns.Add(model => model.tcp_protocol).Titled("Source Port").Encoded(false).Css("centered");
+                    columns.Add(model => model.tcp_protocol2).Titled("Destination Port").Encoded(false).Css("centered");
+                    columns.Add(model => model.tcp_flags_str[0]).Titled("NS").Css("centered");
+                    columns.Add(model => model.tcp_flags_str[1]).Titled("CWR").Css("centered");
+                    columns.Add(model => model.tcp_flags_str[2]).Titled("ECE").Css("centered");
+                    columns.Add(model => model.tcp_flags_str[3]).Titled("URG").Css("centered");
+                    columns.Add(model => model.tcp_flags_str[4]).Titled("ACK").Css("centered");
+                    columns.Add(model => model.tcp_flags_str[5]).Titled("PSH").Css("centered");
+                    columns.Add(model => model.tcp_flags_str[6]).Titled("RST").Css("centered");
+                    columns.Add(model => model.tcp_flags_str[7]).Titled("SYN").Css("centered");
+                    columns.Add(model => model.tcp_flags_str[8]).Titled("FIN").Css("centered");
+                })
+                .Empty("No data found"))
+
+
+            @(Html
+                .Grid(Model.tcphdrs)
+                .Build(columns =>
+                {
+                    columns.Add(model => model.tcp_seq).Titled("SEQ").Css("centered");
+                    columns.Add(model => model.tcp_ack).Titled("ACK").Css("centered");
+                    columns.Add(model => model.tcp_off).Titled("Data offset").Css("centered");
+                    columns.Add(model => model.tcp_res).Titled("Reserved").Css("centered");
+                    columns.Add(model => model.tcp_win).Titled("Window size").Css("centered");
+                    columns.Add(model => model.tcp_csum).Titled("Checksum").Css("centered");
+                    columns.Add(model => model.tcp_urp).Titled("Urgent pointer").Css("centered");
+                })
+                .Empty("No data found"))
+        </div>
+    }
+
+    ///////////////////////////////////UDP-HEADER//////////////////////////////////////////////////////////////////////////////////////
+    if (Model.udphdrs.Count() != 0)
+    {
+        <div>
+            <link href="~/Content/MvcGrid/mvc-grid.css" rel="stylesheet">
+            <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+
+            <div class="example widget-header">
+                <div class="fa fa-bars"></div>
+                <span>UDP Header</span>
+                <div class="widget-buttons">
+                    <span class="fa fa-minus content-toggle"></span>
+                </div>
+            </div>
+
+
+            @(Html
+                .Grid(Model.udphdrs)
+                .Build(columns =>
+                {
+                    columns.Add(model => model.udp_protocol).Titled("Source Port").Encoded(false).Css("centered");
+                    columns.Add(model => model.udp_protocol2).Titled("Destination Port").Encoded(false).Css("centered");
+                    columns.Add(model => model.udp_len).Titled("Length").Css("centered");
+                    columns.Add(model => model.udp_csum).Titled("Checksum").Css("centered");
+                })
+                .Empty("No data found"))
+        </div>
+    }
+    ///////////////////////////////////ICMP-HEADER/////////////////////////////////////////////////////////////////////////////////////
+    if (Model.icmphdrs.Count() != 0)
+    {
+        <div>
+            <link href="~/Content/MvcGrid/mvc-grid.css" rel="stylesheet">
+            <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+
+            <div class="example widget-header">
+                <div class="fa fa-bars"></div>
+                <span>ICMP Header</span>
+                <div class="widget-buttons">
+                    <span class="fa fa-minus content-toggle"></span>
+                </div>
+            </div>
+
+
+            @(Html
+                .Grid(Model.icmphdrs)
+                .Build(columns =>
+                {
+                    columns.Add(model => model.icmp_type_text).Titled("ICMP Type").Css("centered");
+                    columns.Add(model => model.icmp_code).Titled("Code").Css("centered");
+                    columns.Add(model => model.icmp_csum).Titled("Checksum").Css("centered");
+                })
+                .Empty("No data found"))
+        </div>
+    }
+
+
+    ///////////////////////////////////////////////////HUIS/////////////////////////////////////////////////////////////////////////////
+    if (Model.whoisData.Count() != 0)
+    {
+        <div id="whois-source">
+            <link href="~/Content/MvcGrid/mvc-grid.css" rel="stylesheet">
+            <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+
+            <div class="example widget-header">
+                <div class="fa fa-bars"></div>
+                <span>
+                    Whois - RIPE - @Model.iphdrs.First().source
+                </span>
+                <div class="widget-buttons">
+                    <span class="fa fa-minus content-toggle"></span>
+                </div>
+            </div>
+
+
+            @(Html
+                .Grid(Model.whoisData)
+                .Build(columns =>
+                {
+                    columns.Add(model => model.names).Encoded(false);
+                    columns.Add(model => model.values).Encoded(false);
+                })
+                .Empty("No data"))
+        </div>
+    }
+
+    if (Model.whoisData2.Count() != 0)
+    {
+        <div id="whois-destination">
+            <link href="~/Content/MvcGrid/mvc-grid.css" rel="stylesheet">
+            <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+
+            <div class="example widget-header">
+                <div class="fa fa-bars"></div>
+                <span>
+                    Whois - RIPE - @Model.iphdrs.First().destination
+                </span>
+                <div class="widget-buttons">
+                    <span class="fa fa-minus content-toggle"></span>
+                </div>
+            </div>
+
+
+            @(Html
+                .Grid(Model.whoisData2)
+                .Build(columns =>
+                {
+                    columns.Add(model => model.names).Encoded(false);
+                    columns.Add(model => model.values).Encoded(false);
+                })
+                .Empty("No data"))
+        </div>
+    }
+    //////////////////////////////////////////////////////DATA//////////////////////////////////////////////////////
+
+    if (true)
+    {
+        <div>
+            <div class="example widget-header">
+                <div class="fa fa-bars"></div>
+                <span>Data</span>
+                <div class="widget-buttons">
+                    <span class="fa fa-minus content-toggle"></span>
+                </div>
+            </div>
+
+            @Html.AjaxGrid(Url.Page("dataGrid", new { cid = @Model.cid, sid = @Model.sid }))
+
+        </div>
+    }
+    else
+    {
+        <div>
+            <link href="~/Content/MvcGrid/mvc-grid.css" rel="stylesheet">
+            <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+
+            <div class="example widget-header">
+                <div class="fa fa-bars"></div>
+                <span>Data</span>
+                <div class="widget-buttons">
+                    <span class="fa fa-minus content-toggle"></span>
+                </div>
+            </div>
+            @(Html
+                .Grid(Model.datas)
+                .Build(columns =>
+                {
+                    columns.Add(model => model.hex).Titled("Hexa").Css("courier");
+                    columns.Add(model => model.ascii).Titled("ASCII");
+                })
+                .Empty("Packet has no data"))
+        </div>
+    }
+    /////////////////////////////////////Communication-breakdown///////////////////////////////////////////////
+
+    <div>
+        <div class="example widget-header">
+            <div class="fa fa-bars"></div>
+            <span>Communication Breakdown</span>
+            <div class="widget-buttons">
+                <span class="fa fa-minus content-toggle"></span>
+            </div>
+        </div>
+
+        @Html.AjaxGrid(Url.Page("WSGrid", new { cid = @Model.cid, sid = @Model.sid }))
+
+    </div>
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+}
+else
+{
+    @(Html
+        .Grid(Model.errors)
+        .Build(columns =>
+        {
+            columns.Add(model => model).Titled("Error");
+        })
+    );
+}

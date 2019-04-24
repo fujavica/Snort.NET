@@ -1,0 +1,383 @@
+.nodata{
+    cursor: default;
+}
+.w4button {
+    font-size: 14px;
+    margin-bottom: 0;
+    cursor: pointer;
+    user-select: none;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    padding: 6px 12px;
+    border-color: black;
+    border-width: 3px;
+    border-radius: 10px;
+    background-color: rgb(255, 230, 230);
+    font-weight: bold;
+}
+
+.wmbutton {
+    color: #000;
+    outline: 0;
+    cursor: default;
+    font-size: 14px;
+    margin-bottom: 0;
+    user-select: none;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    padding: 6px 12px;
+    border-radius: 10px;
+    font-weight: bold;
+    border-color: black;
+    border-width: 3px;
+}
+
+.w4button:focus {
+    outline: 0;
+    border-color: red;
+    border-width: 3px;
+    background-color: rgb(255, 180, 188);
+}
+
+.w4button:hover {
+    border-color: red;
+    border-width: 3px;
+    background-color: red;
+}
+
+.p1_pieChart{
+    cursor:pointer;
+}
+.p0_pieChart {
+    cursor: pointer;
+}
+.endpointsContainer {
+    width: 100%;
+    height: 450px;
+    margin: auto;
+    margin-bottom: 15px;
+}
+
+.endpoint {
+    width: 49%;
+    height: 450px;
+    float: left;
+}
+
+.endpoint2 {
+    margin-left: 51%;
+    height: 450px;
+}
+.border-layout {
+    border-style: inset;
+    background-color: whitesmoke;
+    border-color: lightgrey;
+    padding-top: 15px;
+}
+.border-title {
+    border-style: inset;
+    background-color: whitesmoke;
+    border-color: lightgrey;
+    margin-bottom: 20px;
+    border-width: thick;
+}   
+.circle1 {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+}
+
+.legend{
+    float: right;
+    margin-top: 440px;
+}
+.country {
+    background: #ffffff;
+}
+.country1 {
+    background: rgb(255, 180, 188);
+}
+.country2 {
+    background: rgb(33,113,181);
+}
+.country3 {
+    background: rgb(158,202,225);
+}
+.country4 {
+    background: rgb(222,235,247);
+}
+.loader {
+    border: 20px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 20px solid blue;
+    border-right: 20px solid white;
+    border-bottom: 20px solid blue;
+    border-left: 20px solid white;
+    width: 120px;
+    height: 120px;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+    text-align: center;
+    left: 50%;
+    margin-left: 40%;
+    margin-top: 25%;
+}
+
+@-webkit-keyframes spin {
+    0% {
+        -webkit-transform: rotate(0deg);
+    }
+
+    100% {
+        -webkit-transform: rotate(360deg);
+    }
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+names {
+
+    fill: none;
+    stroke: #fff;
+    stroke-linejoin: round;
+    }
+  
+/* Tooltip CSS */
+.d3-tip {
+      line-height: 1.5;
+      font-weight: 400;
+      font-family:"avenir next", Arial, sans-serif;
+      padding: 6px;
+      background: rgba(0, 0, 0, 0.6);
+      color: #FFA500;
+      border-radius: 1px;
+      pointer-events: none;
+      }
+  
+      /* Creates a small triangle extender for the tooltip */
+      .d3-tip:after {      
+        box-sizing: border-box;
+        display: inline;
+        font-size: 8px;
+        width: 100%;
+        line-height: 1.5;
+        color: rgba(0, 0, 0, 0.6);
+        position: absolute;
+        pointer-events: none;
+        
+      }
+  
+      /* Northward tooltips */
+      .d3-tip.n:after {
+        content: "\25BC";
+        margin: -1px 0 0 0;
+        top: 100%;
+        left: 0;
+        text-align: center;
+      }
+  
+      /* Eastward tooltips */
+      .d3-tip.e:after {
+        content: "\25C0";
+        margin: -4px 0 0 0;
+        top: 50%;
+        left: -8px;
+      }
+  
+      /* Southward tooltips */
+      .d3-tip.s:after {
+        content: "\25B2";
+        margin: 0 0 1px 0;
+        top: -8px;
+        left: 0;
+        text-align: center;
+      }
+  
+      /* Westward tooltips */
+      .d3-tip.w:after {
+        content: "\25B6";
+        margin: -4px 0 0 -1px;
+        top: 50%;
+        left: 100%;
+      }
+  
+  
+      .details{
+        color:white;
+      }
+
+.graph-title {
+    position: relative;
+    font-size: 24px;
+    fill: rgb(51, 51, 51);
+    font-family: "open sans";
+    text-align: center;
+    background-color:lightgray;
+
+}
+.underline {
+    border-style: outset;
+    background-color: lightgray;
+    border-color: lightgrey;
+    margin-bottom: 20px;
+}
+.tip-question {
+    cursor: pointer;
+    font-size: 19px;
+    font-family: "open sans";
+    border-radius: 100%;
+    background-color: #eee;
+    padding: 0px 8px;
+    float: right;
+    font-weight: bold;
+    margin-top: 2px;
+    margin-right: 5px;
+    /*text-shadow: 0px 2px 2px rgba(0, 0, 0, 0.4);*/
+    font-family: sans-serif;
+}
+.tip-filter {
+    cursor: pointer;
+    font-size: 14px;
+    font-family: "open sans";
+    border-radius: 100%;
+    background-color: #eee;
+    padding: 4px 7px;
+    float: right;
+    margin-top: 2px;
+    margin-right: 5px;
+    /*font-weight: bold;*/
+    /*text-shadow: 0px 2px 2px rgba(0, 0, 0, 0.4);*/
+    font-family: sans-serif;
+}
+  
+  .tooltiptext {
+      visibility: hidden;
+      width: 300px;
+      font-size: 14px; 
+      background-color: #555;
+      font-family: "open sans";
+      color: #fff;
+      text-align: center;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-weight: normal;
+  
+      /* Position the tooltip text */
+      position: absolute;
+      z-index: 1;
+      top: 135%;
+      left: 50%;
+      margin-left: -150px;
+  
+      /* Fade in tooltip */
+      opacity: 0;
+      transition: opacity 0.3s;
+  }
+    .tooltiptext tr, td {
+        margin-top: 2px;
+        margin-bottom: 2px;
+    }
+    .tip-filter .tooltiptext {
+    visibility: hidden;
+    width: 300px;
+    font-size: 14px; 
+    background-color: #555;
+    font-family: "open sans";
+    color: #fff;
+    text-align: center;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-weight: normal;
+
+    /* Position the tooltip text */
+    position: absolute;
+    z-index: 1;
+    top: 135%;
+    left: 50%;
+    margin-left: -150px;
+
+    /* Fade in tooltip */
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+  .tooltiptext::after {
+      content: "";
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      margin-left: -5px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: transparent transparent #555 transparent;
+  }
+  .tip-question:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
+  }
+  .tip-filter:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+
+
+  /*NAVIGATION MENU///////////////////////////////////////////////////////////////////////*/
+
+  dropdown {
+    float: left;
+    overflow: hidden;
+  }
+  
+  /* Dropdown button */
+  .dropdown .dropbtn {
+    font-size: 16px; 
+    border: none;
+    outline: none;
+    color: #9d9d9d;
+    padding: 14px 16px;
+    background-color: inherit;
+    font-family: inherit; /* Important for vertical align on mobile phones */
+    margin: 0; /* Important for vertical align on mobile phones */
+  }
+  
+  .dropdown .dropbtn:hover{
+    color: white;
+  }
+  /* Dropdown content (hidden by default) */
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+  }
+  
+  /* Links inside the dropdown */
+  .dropdown-content a {
+    float: none;
+    color: black;
+   
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    text-align: left;
+  }
+  
+  /* Add a grey background color to dropdown links on hover */
+  .dropdown-content a:hover {
+    background-color: #ddd;
+  }
+  
+  /* Show the dropdown menu on hover */
+  .dropdown:hover .dropdown-content {
+    display: block;
+  }
+

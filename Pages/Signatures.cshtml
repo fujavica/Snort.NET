@@ -1,0 +1,135 @@
+@page
+@model SignaturesModel
+@{
+    ViewData["Title"] = "About";
+}
+<link href="~/Content/MvcGrid/mvc-grid.css" rel="stylesheet">
+<link rel="stylesheet" href="~/Content/FontAwesome/css/all.css">
+<script src="~/Scripts/d3.v4.min.js"></script>
+<script src="~/Scripts/d3pie.min.js"></script>
+
+@{////////////////////////////////////////////////////////////////////////SIGNATURY////////////////////////////
+}
+<div class="graph-title underline">
+    Distribution of signatures
+    <span class="tip-question">
+        ?
+        <span class="tooltiptext">
+            Shows the representation of snort attack signatures.
+        </span>
+    </span>
+    @if (Model.filtered)
+    {
+        <span class="tip-filter">
+            <i class="fas fa-filter"> </i>
+            <span class="tooltiptext">Custom event filter is being applied</span>
+        </span>
+    }
+</div>
+<div id="pieChart2"></div>
+<script>
+var pie2 = new d3pie("pieChart2", {
+	/*"header": {
+		"title": {
+			"text": "Distribution of signatures",
+			"fontSize": 24,
+			"font": "open sans"
+		},
+		"subtitle": {
+			"text": "A full pie chart to show off label collision detection and resolution.",
+			"color": "#999999",
+			"fontSize": 12,
+			"font": "open sans"
+		},
+		"titleSubtitlePadding": 9
+	},*/
+	"footer": {
+		"color": "#999999",
+		"fontSize": 10,
+		"font": "open sans",
+		"location": "bottom-left"
+	},
+	"size": {
+		"canvasWidth": 1500,
+		"canvasHeight": 700,
+		"pieInnerRadius": "20%",
+		"pieOuterRadius": "70%"
+	},
+	"data": {
+		"sortOrder": "value-desc",
+		"smallSegmentGrouping": {
+			"enabled": true
+		},
+		"content": @Html.Raw(Model.signatures)
+	},
+	"labels": {
+		"outer": {
+			//"hideWhenLessThanPercentage": 2,
+			"pieDistance": 50
+		},
+		"inner": {
+			"hideWhenLessThanPercentage": 3
+		},
+		"mainLabel": {
+			"fontSize": 15
+		},
+		"percentage": {
+			"color": "#ffffff",
+			"fontSize": 15,
+			"decimalPlaces": 0
+		},
+		"value": {
+			"color": "#adadad",
+			"fontSize": 15
+		},
+		"lines": {
+			"enabled": true,
+			//"style": "straight"
+		}/*,
+		"truncation": {
+			"enabled": true
+		}*/
+	},
+	"tooltips": {
+		"enabled": true,
+		"type": "placeholder",
+		"string": "{label}: {value}, {percentage}%",
+		"styles": {
+			"fontSize": 15,
+			"fadeInSpeed": 1000
+		}
+	},
+	"effects": {
+		"load": {
+			"speed": 300
+		},
+		"pullOutSegmentOnClick": {
+			"effect": "bounce",
+			"speed": 1000,
+			"size": 25
+		}
+	},
+	"misc": {
+		"gradient": {
+			"enabled": true,
+			"percentage": 100
+		},
+
+		"pieCenterOffset": {
+			"y": -40
+		}
+		//cssPrefix: "p0_"
+	},
+
+	"callbacks": {
+		onClickSegment: function(a) {
+			//alert("Segment clicked! See the console for all data passed to the click handler.");
+			//console.log(a.index);
+			if(a.data.label == "Other"){
+				return;
+			}
+			window.open("Events?desc-contains=" + a.data.label);
+		}
+	}
+});
+</script>
