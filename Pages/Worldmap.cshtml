@@ -1,6 +1,22 @@
 ﻿@page
 @model razor.Pages.WorldmapModel
 @{ Layout = null; }
+
+<script>
+    $("#load").hide();
+</script>
+
+@{if (Model.error != null)
+    {
+        <h2 class="text-danger">Error.</h2>
+        <h3 class="text-danger">An error occurred while processing your request.</h3>
+        <p>
+            <strong>Issue: </strong> <code>@Model.error</code>
+        </p>
+        return;
+    }
+}
+
 <img class="legend" src="~/images/legend.svg" alt="Legend">
 
 <svg id="svg1"></svg>
@@ -94,8 +110,6 @@ function ready(error, data) {
 
 
     }
-
-    $("#load").hide();
 
 
         [].forEach.call(document.getElementsByClassName('mvc-grid'), function (element) {

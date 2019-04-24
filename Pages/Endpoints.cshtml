@@ -20,7 +20,7 @@
     {
         <span class="tip-filter">
             <i class="fas fa-filter"> </i>
-            <span class="tooltiptext">Custom event filter is being applied</span>
+            <span class="tooltiptext">Custom event filter is being applied. You can disable this filter on the "All Events" page.</span>
         </span>
     }
 </div>
@@ -138,6 +138,13 @@ var pie = new d3pie("pieChart", {
             Shows the representation of destination IPs within IPv4 packets.
         </span>
     </span>
+    @if (Model.filtered)
+    {
+        <span class="tip-filter">
+            <i class="fas fa-filter"> </i>
+            <span class="tooltiptext">Custom event filter is being applied. You can disable this filter on the "All Events" page.</span>
+        </span>
+    }
 </div>
 @{///////////////////////////////////////////////////TARGETS////////////////////////////////////////////////////
 }

@@ -24,7 +24,7 @@
     {
         <span class="tip-filter">
             <i class="fas fa-filter"> </i>
-            <span class="tooltiptext">Custom event filter is being applied</span>
+            <span class="tooltiptext">Custom event filter is being applied. You can disable this filter on the "All Events" page.</span>
         </span>
     }
 
@@ -37,13 +37,13 @@
     <script>
         window.noclick = 1;
         $.ajax({
-            url: "Worldmap",
+            url: "Worldmap" + window.location.search,
             cache: false,
             success: function (html) {
                 $("#map").append(html);
             }
         });
-        @{/* Fetch API
+        @{/* Fetch API (not working in some mobile browsers)
         fetch('/Worldmap' + window.location.search)
             .then(function (response) {
                 return response.text();

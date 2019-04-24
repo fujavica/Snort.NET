@@ -102,6 +102,7 @@ namespace razor.Pages
                 error = "Database error: " + e.Message;
                 return;
             }
+            try {
             int year = 0, month = 0, day = 0;
 
             DateTime startdate;
@@ -318,7 +319,13 @@ namespace razor.Pages
             GC.Collect(1, GCCollectionMode.Forced);
             GC.Collect(2, GCCollectionMode.Forced);
             GC.WaitForPendingFinalizers();
-        }
+            }
+            catch (Exception e)
+            {
+                error = "e.Message";
+                return;
+            }
+            }
     }
 
     public class IndexGridModel : PageModel

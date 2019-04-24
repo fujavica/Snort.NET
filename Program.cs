@@ -31,8 +31,8 @@ namespace razor
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
                 .UseKestrel()
-                .UseContentRoot(Directory.GetCurrentDirectory()); //AppContext.BaseDirectory
-             //   .UseUrls("http://*:5000");
+                .UseContentRoot(Directory.GetCurrentDirectory()) //AppContext.BaseDirectory
+                .UseUrls("http://*:5000");
 
     }
 }
