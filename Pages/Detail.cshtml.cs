@@ -116,14 +116,14 @@ namespace razor.Pages
             {
                 return RedirectToPage("Error", "Issue", new { issue = "No appropriate packet log found in " + path + ". Please review your Snort output configuration and activate: output log_tcpdump: tcpdump.log" });
             }
-
-            if (!System.IO.File.Exists("wwwroot/pcaps/" + sid + "." + cid))
+            string dir = Path.Combine(Startup.AppPath, "wwwroot/pcaps/");
+            if (!System.IO.File.Exists(dir + sid + "." + cid))
             {
 
-                (new FileInfo("wwwroot/pcaps/" + sid + "." + cid)).Directory.Create();
+                (new FileInfo(dir + sid + "." + cid)).Directory.Create();
                 //CaptureDeviceList devices = CaptureDeviceList.Instance;
                 CaptureFileReaderDevice device = new CaptureFileReaderDevice(closestFile);
-                captureFileWriter = new CaptureFileWriterDevice("wwwroot/pcaps/" + sid + "." + cid);
+                captureFileWriter = new CaptureFileWriterDevice(dir + sid + "." + cid);
                 captureFileWriter.Open();
                 device.OnPacketArrival += new PacketArrivalEventHandler(this.device_OnPacketArrival);
                 device.OnCaptureStopped += new CaptureStoppedEventHandler(this.device_OnCaptureStopped);
@@ -142,9 +142,8 @@ namespace razor.Pages
                     }
                 case "tcpdump":
                     {
-                        string dir = Directory.GetCurrentDirectory();
-                        string tcpdump = Utils.Bash("tcpdump -r " + dir + "/wwwroot/pcaps/" + sid + "." + cid);
-                        return File(new MemoryStream(Encoding.UTF8.GetBytes(tcpdump ?? "")), "application/octet-stream",
+                        string tcpdump = Utils.Bash("tcpdump -r " + dir + sid + "." + cid);
+                        return File(new MemoryStream(Encoding.UTF8.GetBytes(tcpdump ?? "tcpdump is not available")), "application/octet-stream",
                         sid + "." + cid + ".txt");
                     }
                 default:
@@ -262,7 +261,6 @@ namespace razor.Pages
                 case 1:      //ICMP HEADER
                     {
                         Icmphdr icmphdr = IcmphdrTable.GetIcmphdr(cid, sid, db.GetConnection());
-                        string path = System.AppDomain.CurrentDomain.BaseDirectory + "ICMP-types.txt";
 
                         //icmphdr.icmp_type_text = Utils.Bash("cat " + path + " | grep '#" + icmphdr.icmp_type + " –'");
                         icmphdr.icmp_type_text = Utils.GetICMPType(icmphdr.icmp_type.ToString());
@@ -497,8 +495,8 @@ namespace razor.Pages
                 }
 
                 extractFromPcap(this.cid, this.sid);
-                string dir = Directory.GetCurrentDirectory();
-                string tsharkInput = Utils.extractPcap(dir + "/wwwroot/pcaps/" + sid + "." + cid);
+                string dir = Path.Combine(Startup.AppPath, "wwwroot/pcaps/");
+                string tsharkInput = Utils.extractPcap(dir + sid + "." + cid);
 
                 using (StringReader reader = new StringReader(tsharkInput))
                 {
@@ -539,6 +537,7 @@ namespace razor.Pages
         }
         public async void extractFromPcap(int cid, int sid)
         {
+            string dir = Path.Combine(Startup.AppPath, "wwwroot/pcaps/");
             SnortContext db = HttpContext.RequestServices.GetService(typeof(SnortContext)) as SnortContext;
             Utils.Tcpdump tcpdump_path = HttpContext.RequestServices.GetService(typeof(Utils.Tcpdump)) as Utils.Tcpdump;
             string path = tcpdump_path.path;
@@ -559,7 +558,7 @@ namespace razor.Pages
             //TimeSpan epochSecs = new TimeSpan(new DateTime(1970, 1, 1).Second);
             //targetSec = (((DateTimeOffset)alerts.First().time).Second - epochSecs.Seconds);
 
-            if (!System.IO.File.Exists("wwwroot/pcaps/" + sid + "." + cid))
+            if (!System.IO.File.Exists(dir + sid + "." + cid))
             {
                 string source = StaticData.alerts.Where(x => x.cid == cid && x.sid == sid).FirstOrDefault().src_ip;
                 string dest = StaticData.alerts.Where(x => x.cid == cid && x.sid == sid).FirstOrDefault().dest_ip;
@@ -590,10 +589,10 @@ namespace razor.Pages
                         }
                     }
 
-                (new FileInfo("wwwroot/pcaps/" + sid + "." + cid)).Directory.Create();
+                (new FileInfo(dir + sid + "." + cid)).Directory.Create();
                     //CaptureDeviceList devices = CaptureDeviceList.Instance;
                     CaptureFileReaderDevice device = new CaptureFileReaderDevice(closestFile);
-                    captureFileWriter = new CaptureFileWriterDevice("wwwroot/pcaps/" + sid + "." + cid);
+                    captureFileWriter = new CaptureFileWriterDevice(dir + sid + "." + cid);
                     captureFileWriter.Open();
                     device.OnPacketArrival += new PacketArrivalEventHandler(this.device_OnPacketArrival);
                     device.OnCaptureStopped += new CaptureStoppedEventHandler(this.device_OnCaptureStopped);

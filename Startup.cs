@@ -17,10 +17,11 @@ namespace razor
 
         public IHostingEnvironment HostingEnvironment { get; private set; }
         public static IConfiguration Configuration { get; private set; }
-
+        public static string AppPath;
         public Startup(IConfiguration conf, IHostingEnvironment env)
         {
             this.HostingEnvironment = env;
+            AppPath = env.ContentRootPath;
             Configuration = conf;
         }
         // This method gets called by the runtime. Use this method to add services to the container.

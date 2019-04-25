@@ -20,7 +20,7 @@ namespace razor
         {
             List<TransportProtocol> protocols = new List<TransportProtocol>();
             XmlDocument xdoc = new XmlDocument();
-            xdoc.Load("wwwroot/service-names-port-numbers.xml");
+            xdoc.Load(Path.Combine(Startup.AppPath , "wwwroot/service-names-port-numbers.xml"));
             XmlNode root = xdoc.DocumentElement;
             XmlNamespaceManager nsmgr = new XmlNamespaceManager(xdoc.NameTable);
             nsmgr.AddNamespace("i", "http://www.iana.org/assignments");
@@ -48,7 +48,7 @@ namespace razor
         {
             List<Protocol> protocols = new List<Protocol>();
             XmlDocument xdoc = new XmlDocument();
-            xdoc.Load("wwwroot/protocol-numbers.xml");
+            xdoc.Load(Path.Combine(Startup.AppPath , "wwwroot/protocol-numbers.xml"));
             XmlNode root = xdoc.DocumentElement;
             XmlNamespaceManager nsmgr = new XmlNamespaceManager(xdoc.NameTable);
             nsmgr.AddNamespace("i", "http://www.iana.org/assignments");

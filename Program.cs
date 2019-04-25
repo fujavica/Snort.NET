@@ -16,10 +16,14 @@ namespace razor
 
     public class Program
     {
+        public static string rootpath;
         public static void Main(string[] args)
         {
-            string path = AppContext.BaseDirectory;
-            string path2 = Directory.GetCurrentDirectory();
+            rootpath = AppContext.BaseDirectory;
+            #if DEBUG
+                    rootpath = Directory.GetCurrentDirectory();
+            #endif
+
             var configuration = new ConfigurationBuilder()
             .AddCommandLine(args)
             .Build();
@@ -31,7 +35,7 @@ namespace razor
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
                 .UseKestrel()
-                .UseContentRoot(Directory.GetCurrentDirectory()) //AppContext.BaseDirectory
+                .UseContentRoot(rootpath) //AppContext.BaseDirectory
                 .UseUrls("http://*:5000");
 
     }

@@ -79,7 +79,7 @@ namespace razor
 
         public static string GetICMPType(string code)
         {
-            string path = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "wwwroot/ICMP-types.txt");
+            string path = Path.Combine(Startup.AppPath ,"wwwroot/ICMP-types.txt");
 
             string[] lines = File.ReadAllLines(path);
             foreach (string line in lines)
