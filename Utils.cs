@@ -20,31 +20,36 @@ namespace razor
 
         public static string Bash(this string cmd)
         {
-            var escapedArgs = cmd.Replace("\"", "\\\"");
+            try { 
+                var escapedArgs = cmd.Replace("\"", "\\\"");
 
-            var process = new Process()
-            {
-                StartInfo = new ProcessStartInfo
+                var process = new Process()
                 {
-                    FileName = "/bin/bash",
-                    Arguments = $"-c \"{escapedArgs}\"",
-                    RedirectStandardOutput = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = true,
+                    StartInfo = new ProcessStartInfo
+                    {
+                        FileName = "/bin/bash",
+                        Arguments = $"-c \"{escapedArgs}\"",
+                        RedirectStandardOutput = true,
+                        UseShellExecute = false,
+                        CreateNoWindow = true,
+                    }
+                };
+                string result = null;
+                try
+                {
+                    process.Start();
+                    result = process.StandardOutput.ReadToEnd();
+                    process.WaitForExit();
                 }
-            };
-            string result = null;
-            try
-            {
-                process.Start();
-                result = process.StandardOutput.ReadToEnd();
-                process.WaitForExit();
-            }
-            catch (Exception)
-            {
+                catch (Exception)
+                {
 
+                }
+                return result;
+            }catch(Exception)
+            {
+                return "";
             }
-            return result;
         }
 
         public static string ConvertHex(String hexString)
