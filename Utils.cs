@@ -35,18 +35,15 @@ namespace razor
                     }
                 };
                 string result = null;
-                try
-                {
-                    process.Start();
-                    result = process.StandardOutput.ReadToEnd();
-                    process.WaitForExit();
-                }
-                catch (Exception)
-                {
 
-                }
+                process.Start();
+                result = process.StandardOutput.ReadToEnd();
+                process.WaitForExit();
+                
+
                 return result;
-            }catch(Exception)
+            }
+            catch (Exception)
             {
                 return "";
             }
