@@ -1,9 +1,9 @@
-# Snort.NET
+# Snortnet
 Web interface for IDS Snort
 * [Snort Wiki](https://github.com/fujavica/Snort.NET/wiki)
 
 ## Description
-Snort.NET is a powerful web interface for Snort log analysis. Application is build upon a self-contained .NET Core runtime 
+Snortnet is a powerful web interface for Snort log analysis. Application is build upon a self-contained .NET Core runtime 
 and contains a built-in web server. Web features various interactive graphs, alert browser and packet-detail page with export capabilities.
 
 ## Requirements
