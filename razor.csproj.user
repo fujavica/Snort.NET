@@ -8,6 +8,6 @@
     <WebStackScaffolding_IsPartialViewSelected>False</WebStackScaffolding_IsPartialViewSelected>
     <WebStackScaffolding_IsReferencingScriptLibrariesSelected>True</WebStackScaffolding_IsReferencingScriptLibrariesSelected>
     <WebStackScaffolding_LayoutPageFile />
-    <NameOfLastUsedPublishProfile>linux-x64</NameOfLastUsedPublishProfile>
+    <NameOfLastUsedPublishProfile>win-x86</NameOfLastUsedPublishProfile>
   </PropertyGroup>
 </Project>
